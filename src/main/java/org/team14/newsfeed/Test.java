@@ -17,5 +17,17 @@ public class Test {
   for (int i = 0; i < test.length; i++) {
     System.out.println(test[i]);
   }
+
+    for (int i = 0; i < test.length; i++) {
+      System.out.println(test[i]);
+    }
+
+    for (int i = 0; i < test.length; i++) {
+      System.out.println(test[i]);
+    }
+
+    for (int i = 0; i < test.length; i++) {
+      System.out.println(test[i]);
+    }
   }
 }
