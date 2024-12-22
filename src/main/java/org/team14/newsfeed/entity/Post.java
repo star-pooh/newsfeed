@@ -8,17 +8,20 @@ import lombok.Getter;
 @Table(name = "post")
 public class Post extends BaseEntity {
 
+    // 게시물 ID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 제목
     @Column(nullable = false)
     private String title;
 
+    // 내용
     @Column(columnDefinition = "longtext", nullable = false)
     private String contents;
 
-
+    // 사용자 ID
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
