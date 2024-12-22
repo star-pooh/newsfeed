@@ -16,19 +16,30 @@ public class Post extends BaseEntity {
     private String title;
 
     @Column(columnDefinition = "longtext")
-    private String content;
+    private String contents;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(String title, String content, User user) {
+
+    public Post(String title, String contents, User user) {
         this.title = title;
-        this.content = content;
+        this.contents = contents;
         this.user = user;
     }
 
     public Post() {
 
     }
+
+    public Post(String title, String contents) {
+        this.title = title;
+        this.contents = contents;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

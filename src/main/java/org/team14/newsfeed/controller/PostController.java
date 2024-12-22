@@ -25,7 +25,7 @@ public class PostController {
 
         PostResponseDto post = postService.createPost(
                 requestDto.getTitle(),
-                requestDto.getContent(),
+                requestDto.getContents(),
                 requestDto.getUsername()
         );
         return new ResponseEntity<>(post, HttpStatus.CREATED);
