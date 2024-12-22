@@ -23,11 +23,9 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String title;
 
-  // TODO : not null 제약 추가
   @Column(columnDefinition = "longtext")
   private String content;
 
-  // TODO : not null 제약 추가
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
