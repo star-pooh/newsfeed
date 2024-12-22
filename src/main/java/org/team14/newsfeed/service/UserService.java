@@ -24,7 +24,7 @@ public class UserService {
    *
    * @param email 이메일
    */
-  public void isExistUser(String email) {
+  public void checkRegisteredUser(String email) {
     User foundUser = this.userRepository.findByEmail(email).orElse(null);
 
     if (Objects.nonNull(foundUser)) {

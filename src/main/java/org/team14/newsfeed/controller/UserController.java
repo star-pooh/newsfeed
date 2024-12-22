@@ -35,7 +35,7 @@ public class UserController {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력을 확인해주세요.");
     }
 
-    this.userService.isExistUser(dto.getEmail());
+    this.userService.checkRegisteredUser(dto.getEmail());
 
     UserCreateResponseDto userCreateResponseDto = this.userService.createUser(dto.getUsername(),
         dto.getEmail(),
