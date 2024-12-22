@@ -24,6 +24,9 @@ repositories {
 }
 
 dependencies {
+    // Password Encoder
+    implementation 'at.favre.lib:bcrypt:0.10.2'
+
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
