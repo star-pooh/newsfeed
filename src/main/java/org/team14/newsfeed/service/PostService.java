@@ -32,9 +32,9 @@ public class PostService {
     public PostWithEmailResponseDto findById(Long id) {
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
-        User creator = findPost.getUser();
+        User creator = (User) findPost.getUser();
 
-        return new PostWithEmailResponseDto(findPost.getTitle(), findPost.getContents(), creator.getemail());
+        return new PostWithEmailResponseDto(findPost.getTitle(), findPost.getContents(), creator.getUsername());
 
     }
 

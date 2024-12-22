@@ -25,7 +25,7 @@ public class PostResponseDto {
 
     public static PostResponseDto toDto(Post post) {
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser());
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getEmail());
 
     }
 

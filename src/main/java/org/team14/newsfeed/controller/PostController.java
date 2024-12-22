@@ -53,7 +53,7 @@ public class PostController {
 
     //삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deldte(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         postService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
