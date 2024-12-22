@@ -17,7 +17,7 @@ public class PostService {
         Post findUser = postRepository.findPostByUsernameOrElseThrow(username);
 
         Post post = new Post(title, contents);
-        post.setUser(finduser);
+        post.setUser(findUser);
 
         postRepository.save(post);
 

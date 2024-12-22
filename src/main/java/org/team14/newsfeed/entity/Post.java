@@ -15,11 +15,12 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "longtext")
+    @Column(columnDefinition = "longtext", nullable = false)
     private String contents;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 
@@ -28,6 +29,7 @@ public class Post extends BaseEntity {
         this.contents = contents;
         this.user = user;
     }
+
 
     public Post() {
 
@@ -41,5 +43,5 @@ public class Post extends BaseEntity {
     public void setUser(User user) {
         this.user = user;
     }
-
 }
+
