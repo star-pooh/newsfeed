@@ -8,27 +8,40 @@ import lombok.Getter;
 @Table(name = "post")
 public class Post extends BaseEntity {
 
+    // 게시물 ID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 제목
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "longtext")
-    private String content;
+    // 내용
+    @Column(columnDefinition = "longtext", nullable = false)
+    private String contents;
 
+    // 사용자 ID
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Post(String title, String content, User user) {
-        this.title = title;
-        this.content = content;
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public Post() {
+    private Post(String title, String contents, User user) {
+        this.title = title;
+        this.contents = contents;
+        this.user = user;
+    }
+
+    protected Post() {
 
     }
+
+    public static Post of(String title, String contents, User user) {
+        return new Post(title, contents, user);
+    }
 }
+
