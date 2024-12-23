@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FollowUserCreateRequestDto {
 
-    private final String followingUser_email;
+    private final String followingUserEmail;
 
-    private final String followedUser_email;
+    private final String followedUserEmail;
 
 }

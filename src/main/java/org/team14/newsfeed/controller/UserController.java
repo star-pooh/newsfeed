@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping("/follow")
     public ResponseEntity<Map<String, String>> follow(@RequestBody FollowUserCreateRequestDto dto) {
 
-        followUserService.follow(dto.getFollowingUser_email(), dto.getFollowedUser_email());
+        followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Follow Completed");
