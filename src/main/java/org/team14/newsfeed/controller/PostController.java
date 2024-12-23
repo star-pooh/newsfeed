@@ -14,19 +14,24 @@ import org.team14.newsfeed.service.PostService;
 
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
+
+    /**
+     * @param dto 게시글 작성에 필요한 요청 데이터
+     * @return
+     */
     @PostMapping
-    public ResponseEntity<PostResponseDto> save(@RequestBody CreatePostDto requestDto) {
+    public ResponseEntity<PostResponseDto> save(@RequestBody CreatePostDto dto) {
 
         PostResponseDto post = postService.createPost(
-                requestDto.getTitle(),
-                requestDto.getContent(),
-                requestDto.getUsername()
+                dto.getTitle(),
+                dto.getContents(),
+                dto.getUsername()
         );
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
