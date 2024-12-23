@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.team14.newsfeed.entity.FollowUser;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomServiceException;
@@ -20,7 +19,6 @@ public class FollowUserService {
     private final FollowUserRepository followUserRepository;
     private final UserRepository userRepository;
 
-    @Transactional
     public void follow(String following, String followed) {
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
