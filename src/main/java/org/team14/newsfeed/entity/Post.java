@@ -27,20 +27,19 @@ public class Post extends BaseEntity {
     private User user;
 
 
-    public Post(String title, String contents, User user) {
+    private Post(String title, String contents, User user) {
         this.title = title;
         this.contents = contents;
         this.user = user;
     }
 
 
-    public Post() {
+    protected Post() {
 
     }
 
-    public Post(String title, String contents) {
-        this.title = title;
-        this.contents = contents;
+    public static Post of(String title, String contents, User user) {
+        return new Post(title, contents, user);
     }
 
     public void setUser(User user) {
