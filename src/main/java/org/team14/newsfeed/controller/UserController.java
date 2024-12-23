@@ -16,9 +16,6 @@ import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -54,13 +51,10 @@ public class UserController {
 
     //TODO : session이 완성되면 세션을 통해 로그인되어있는 사람의 email 가져오는 로직으로 변경
     @PostMapping("/follow")
-    public ResponseEntity<Map<String, String>> follow(@RequestBody FollowUserCreateRequestDto dto) {
+    public ResponseEntity<String> follow(@RequestBody FollowUserCreateRequestDto dto) {
 
         followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Follow Completed");
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("팔로우가 완료되었습니다.");
     }
 }
