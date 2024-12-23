@@ -30,7 +30,8 @@ public class ErrorResponse {
    * @param <T> CustomException
    * @return response
    */
-  public static <T extends BaseException> Map<String, Object> responseFromCustomException(T e) {
+  public static <T extends CustomBaseException> Map<String, Object> createErrorResponseFromCustomException(
+      T e) {
     Map<String, Object> response = new HashMap<>();
     response.put("code", e.getHttpStatus().value());
     response.put("httpStatus", e.getHttpStatus());
@@ -45,7 +46,7 @@ public class ErrorResponse {
    * @param httpStatus HttpStatus
    * @return response
    */
-  public static Map<String, Object> responseFromException(HttpStatus httpStatus) {
+  public static Map<String, Object> createErrorResponseFromException(HttpStatus httpStatus) {
     Map<String, Object> response = new HashMap<>();
     response.put("code", httpStatus.value());
     response.put("httpStatus", httpStatus);
