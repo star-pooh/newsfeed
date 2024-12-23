@@ -1,5 +1,6 @@
 package org.team14.newsfeed.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -14,15 +15,15 @@ public class FollowUser {
 
     @ManyToOne
     @JoinColumn(name = "following_user_id", nullable = false)
-    private User following;
+    private User followingUser;
 
     @ManyToOne
     @JoinColumn(name = "followed_user_id", nullable = false)
-    private User followed;
+    private User followedUser;
 
-    private FollowUser(User following, User followed) {
-        this.following = following;
-        this.followed = followed;
+    private FollowUser(User followingUser, User followedUser) {
+        this.followingUser = followingUser;
+        this.followedUser = followedUser;
     }
 
     protected FollowUser() {
