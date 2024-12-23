@@ -27,8 +27,16 @@ public class UserService {
   public void checkRegisteredUser(String email) {
     User foundUser = this.userRepository.findByEmail(email).orElse(null);
 
-    if (Objects.nonNull(foundUser)) {
-      log.error("[UserService.isExistUser] 등록된 이메일로 가입 시도 : {}", email);
+    if (Objects.isNull(foundUser)) {
+      return;
+    }
+
+    if (foundUser.isDeleted()) {
+      log.error("[UserService.checkRegisteredUser] 탈퇴한 이메일로 가입 시도 : {}", email);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
+    } else {
+      log.error("[UserService.checkRegisteredUser] 등록된 이메일로 가입 시도 : {}", email);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다. email : " + email);
     }
   }
