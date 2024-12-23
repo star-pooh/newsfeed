@@ -52,6 +52,7 @@ public class UserController {
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
+    //TODO : session이 완성되면 세션을 통해 로그인되어있는 사람의 email 가져오는 로직으로 변경
     @PostMapping("/follow")
     public ResponseEntity<Map<String, String>> follow(@RequestBody FollowUserCreateRequestDto dto) {
 
