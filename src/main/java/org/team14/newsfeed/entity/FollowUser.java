@@ -20,7 +20,7 @@ public class FollowUser {
     @JoinColumn(name = "followed_user_id", nullable = false)
     private User followed;
 
-    public FollowUser(User following, User followed) {
+    private FollowUser(User following, User followed) {
         this.following = following;
         this.followed = followed;
     }
