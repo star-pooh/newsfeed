@@ -37,8 +37,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<FollowUser> following;
 
+
     @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
     private List<FollowUser> followed;
+
 
     private User(String username, String email, String password) {
         this.username = username;
