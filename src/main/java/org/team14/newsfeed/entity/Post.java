@@ -26,6 +26,9 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     private Post(String title, String contents, User user) {
         this.title = title;
@@ -33,17 +36,12 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-
     protected Post() {
 
     }
 
     public static Post of(String title, String contents, User user) {
         return new Post(title, contents, user);
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
 
