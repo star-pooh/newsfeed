@@ -33,7 +33,7 @@ public class UserCreateResponseDto {
    * @return UserCreateResponseDto
    */
   public static UserCreateResponseDto of(User user) {
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     return new UserCreateResponseDto(
         user.getUsername(),

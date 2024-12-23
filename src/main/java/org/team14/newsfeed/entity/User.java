@@ -42,7 +42,7 @@ public class User extends BaseEntity {
     this.password = password;
   }
 
-  protected User() {
+  public User() {
   }
 
   public static User of(String username, String email, String password) {
