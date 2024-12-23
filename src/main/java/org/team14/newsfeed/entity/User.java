@@ -34,11 +34,11 @@ public class User extends BaseEntity {
     private boolean isDeleted;
 
     // 팔로우
-    @OneToMany(mappedBy = "following_user_id", fetch = FetchType.LAZY)
-    private List<FollowUser> followings;
+    @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
+    private List<FollowUser> following;
 
-    @OneToMany(mappedBy = "followed_user_id", fetch = FetchType.LAZY)
-    private List<FollowUser> followers;
+    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
+    private List<FollowUser> followed;
 
     private User(String username, String email, String password) {
         this.username = username;

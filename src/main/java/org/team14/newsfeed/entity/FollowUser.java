@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table
+@Table(name = "follow_user")
 public class FollowUser {
 
     @Id
@@ -13,13 +13,24 @@ public class FollowUser {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "following_user_id")
-    private User followerUserId;
+    @JoinColumn(name = "following_user_id", nullable = false)
+    private User following;
 
     @ManyToOne
-    @JoinColumn(name = "followed_user_id")
-    private User followedUserId;
+    @JoinColumn(name = "followed_user_id", nullable = false)
+    private User followed;
 
-    public FollowUser() {
+    public FollowUser(User followed, User following) {
+        this.followed = followed;
+        this.following = following;
     }
+
+    protected FollowUser() {
+    }
+
+    public static FollowUser createFollowRelationship(User following, User followed) {
+        return new FollowUser(following, followed);
+    }
+
+
 }
