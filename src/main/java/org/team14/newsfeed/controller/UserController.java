@@ -52,7 +52,7 @@ public class UserController {
 
     //TODO : session이 완성되면 세션을 통해 로그인되어있는 사람의 email 가져오는 로직으로 변경
     @PostMapping("/follow")
-    public ResponseEntity<String> follow(@RequestBody FollowUserCreateRequestDto dto) {
+    public ResponseEntity<String> follow(@Valid @RequestBody FollowUserCreateRequestDto dto) {
 
         followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @DeleteMapping("/follow")
-    public ResponseEntity<String> unFollow(@RequestBody FollowUserDeleteRequestDto dto) {
+    public ResponseEntity<String> unFollow(@Valid @RequestBody FollowUserDeleteRequestDto dto) {
 
         followUserService.unfollow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
