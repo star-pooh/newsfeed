@@ -87,4 +87,45 @@ public class UserService {
     userRepository.save(user);
   }
 
+  // 사용자 복구
+  public void restoreUser(Long userId, String password) {
+    // 사용자 조회
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. userId: " + userId));
+
+    // 비밀번호 검증
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+    }
+
+    // 복구 가능 여부 확인 및 복구
+    user.restore();
+
+    // 변경 사항 저장
+    userRepository.save(user);
+  }
+
+  // 이메일과 비밀번호로 삭제 처리
+  public void deleteUserByEmail(String email, String password) {
+    // 사용자 조회
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. email: " + email));
+
+    // 이미 삭제된 사용자 여부 확인
+    if (user.isDeleted()) {
+      log.error("[UserService.deleteUserByEmail] 이미 탈퇴한 사용자입니다. email: {}", email);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
+    }
+
+    // 비밀번호 검증
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      log.error("[UserService.deleteUserByEmail] 비밀번호가 일치하지 않습니다. email: {}", email);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+    }
+
+    // 사용자 삭제 처리
+    user.setDeleted(true);
+    userRepository.save(user);
+  }
+
 }

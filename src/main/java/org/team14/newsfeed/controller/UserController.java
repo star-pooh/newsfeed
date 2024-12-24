@@ -62,18 +62,34 @@ public class UserController {
     }
 
     /**
-     * 사용자 삭제 API */
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId,
+     * 사용자 삭제 API
+     */
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(@RequestBody @Valid UserDeleteRequestDto dto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
+        }
+
+        // 이메일과 비밀번호를 전달하여 삭제 처리
+        userService.deleteUserByEmail(dto.getEmail(), dto.getPassword());
+
+        return ResponseEntity.ok("사용자가 정상적으로 삭제되었습니다.");
+    }
+
+    /**
+    * 사용자 복구 API */
+    @PostMapping("/{userId}/restore")
+    public ResponseEntity<String> restoreUser(
+            @PathVariable Long userId,
             @RequestBody @Valid UserDeleteRequestDto dto,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
         }
 
-        // 비밀번호만 전달하도록 변경
-        userService.deleteUser(userId, dto.getPassword());
+        userService.restoreUser(userId, dto.getPassword());
 
-        return ResponseEntity.ok("사용자가 정상적으로 삭제되었습니다.");
+        return ResponseEntity.ok("사용자가 정상적으로 복구되었습니다.");
     }
 }
