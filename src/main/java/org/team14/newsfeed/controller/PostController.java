@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.team14.newsfeed.dto.CreatePostDto;
 import org.team14.newsfeed.dto.PostResponseDto;
-import org.team14.newsfeed.dto.PostWithEmailResponseDto;
 import org.team14.newsfeed.service.PostService;
 
 import java.util.List;
@@ -33,23 +32,25 @@ public class PostController {
 
     //전체 조회
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> findAll() {
+    public ResponseEntity<List<PostResponseDto>> findPostsByOptionalFilters(@RequestParam(required = false) String email,
+                                                                            @RequestParam(required = false) String name) {
 
-        List<PostResponseDto> postResponseDtoList = postService.findAll();
+
+        List<PostResponseDto> postResponseDtoList = postService.findPostsByOptionalFilters(email, name);
 
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
 
     }
 
-    //특정 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<PostWithEmailResponseDto> findById(@PathVariable Long id) {
-
-        PostWithEmailResponseDto findWithEmailResponseDto = postService.findById(id);
-
-        return new ResponseEntity<>(findWithEmailResponseDto, HttpStatus.OK);
-
-    }
+//    //특정 조회
+//    @GetMapping("/")
+//    public ResponseEntity<PostWithEmailResponseDto> findByEmailOrName(@RequestParam(required = false) String email, @RequestParam(required = false) String name) {
+//
+//        PostWithEmailResponseDto findWithEmailResponseDto = postService.findByEmailOrName();
+//
+//        return new ResponseEntity<>(findWithEmailResponseDto, HttpStatus.OK);
+//
+//    }
 
     //삭제
     @DeleteMapping("/{id}")
