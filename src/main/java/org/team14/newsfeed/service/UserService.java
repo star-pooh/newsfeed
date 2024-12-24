@@ -60,20 +60,27 @@ public class UserService {
     return UserCreateResponseDto.of(savedUser);
   }
 
-  /*
+  /**
   * 사용자 수정 */
   public User updateUser(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
     // 사용자 조회
     User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found" + userId));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
-    // 사용자 정보 수정
+    // 사용자 정보 수정 (이름 + 이메일)
     user.setUsername(userUpdateRequestDto.getUsername());
     user.setEmail(userUpdateRequestDto.getEmail());
-    // 필요한 경우 다른 필드도 설정 가능
+
+    // 비밀번호 변경 로직
+    if (userUpdateRequestDto.getNewPassword() != null) {
+      user.changePassword(userUpdateRequestDto.getCurrentPassword(),
+              userUpdateRequestDto.getNewPassword(),
+              passwordEncoder);
+    }
 
     // 변경 사항 저장
     return userRepository.save(user);
   }
-
 }
+
+

@@ -62,12 +62,17 @@ public class UserController {
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
     }
 
-    /*
+    /**
      * 사용자 수정 API */
     @PutMapping("/{userId}")
     public ResponseEntity<UserCreateResponseDto> updateUser(
             @PathVariable Long userId,
-            @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+            @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터가 잘못 입력되었습니다.");
+        }
+
         User updatedUser = userService.updateUser(userId, userUpdateRequestDto);
         return ResponseEntity.ok(UserCreateResponseDto.of(updatedUser));
     }
