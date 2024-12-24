@@ -47,20 +47,20 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // JWT 관련 의존성
-    implementation 'org.springframework.security:spring-security-jwt'
-
-    //JWT 서명, 검증, OAuth2와의 통합
-    implementation 'org.springframework.security:spring-security-jwt'
+    //spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // JWT API: 토큰 생성, 파싱, 서명 등을 제공하는 핵심 라이브러리
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 
-    // JWT Impl: API의 실제 구현체로, 토큰 처리 로직을 실행하는 데 필요
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
     // JSON 처리 라이브러리: Jackson을 사용하여 JWT Payload의 JSON 데이터를 직렬화/역직렬화
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+
 }
 
 tasks.named('test') {
