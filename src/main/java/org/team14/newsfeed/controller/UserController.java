@@ -45,7 +45,6 @@ public class UserController {
                 dto.getEmail(),
                 dto.getPassword());
 
-
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
@@ -56,5 +55,11 @@ public class UserController {
         followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto dto) {
+        String token = userService.authenticateUser(dto);
+        return ResponseEntity.ok(token);
     }
 }
