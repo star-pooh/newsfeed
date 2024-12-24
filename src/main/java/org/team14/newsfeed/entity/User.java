@@ -54,4 +54,9 @@ public class User extends BaseEntity {
     public static User of(String username, String email, String password) {
         return new User(username, email, password);
     }
+
+    // 삭제
+    public void setDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
 }
