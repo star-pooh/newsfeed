@@ -1,5 +1,6 @@
 package org.team14.newsfeed.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
+import org.team14.newsfeed.dto.user.LoginRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.exception.CustomServiceException;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
 
@@ -42,8 +45,7 @@ public class UserController {
         this.userService.checkRegisteredUser(dto.getEmail());
 
         UserCreateResponseDto userCreateResponseDto = this.userService.createUser(dto.getUsername(),
-                dto.getEmail(),
-                dto.getPassword());
+                dto.getEmail(), dto.getPassword());
 
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
@@ -58,8 +60,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto dto) {
-        String token = userService.authenticateUser(dto);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto requestDto,
+            HttpServletResponse response) {
+        try {
+            userService.authenticateUser(requestDto.getEmail(), requestDto.getPassword(), response);
+            return ResponseEntity.ok("로그인에 성공했습니다.");
+        } catch (CustomServiceException e) {
+            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+        }
     }
 }

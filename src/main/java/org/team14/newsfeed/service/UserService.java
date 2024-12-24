@@ -1,9 +1,15 @@
 package org.team14.newsfeed.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.PasswordEncoder;
@@ -21,6 +27,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final AuthenticationProvider authenticationProvider;
 
     /**
      * 등록된 사용자인지 확인
@@ -62,13 +69,23 @@ public class UserService {
         return UserCreateResponseDto.of(savedUser);
     }
 
-    public void userLogin(String email, String password) {
-        User findUser = userRepository.findUserByEmailOrElseThrow(email);
-
-        if (!passwordEncoder.matches(password, findUser.getPassword())) {
-            throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST,
-                    "비밀번호가 일치하지 않습니다.");
+    public String authenticateUser(String email, String password, HttpServletResponse response) {
+        try {
+            // AuthenticationProvider를 통한 인증
+            Authentication authentication = authenticationProvider.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = jwtUtil.createToken(email);
+            response.addHeader("Authorization", "Bearer " + token);
+            return token;
+        } catch (AuthenticationException e) {
+            log.error("Authentication failed: {}", e.getMessage());
+            throw new CustomServiceException(
+                    getClass().getSimpleName(),
+                    HttpStatus.UNAUTHORIZED,
+                    "인증에 실패했습니다."
+            );
         }
-        String token = jwtUtil.createToken(findUser.getUsername());
     }
 }

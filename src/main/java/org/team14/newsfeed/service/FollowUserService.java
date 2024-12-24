@@ -25,15 +25,17 @@ public class FollowUserService {
         User followingUser = userRepository.findUserByEmailOrElseThrow(following);
 
         if (following.equals(followed)) {
-            throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "자신을 팔로우 할수 없습니다");
+            throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST,
+                    "자신을 팔로우 할수 없습니다");
         }
 
-        if (followUserRepository.existsByFollowingAndFollowed(followingUser, followedUser)) {
-            throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "이미 팔로우한 사람입니다.");
+        if (followUserRepository.existsByFollowingUserAndFollowedUser(followingUser,
+                followedUser)) {
+            throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST,
+                    "이미 팔로우한 사람입니다.");
         }
 
         FollowUser follow = FollowUser.createFollowRelationship(followingUser, followedUser);
-
 
         followUserRepository.save(follow);
     }

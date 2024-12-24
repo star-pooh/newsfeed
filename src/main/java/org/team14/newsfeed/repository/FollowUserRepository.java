@@ -6,5 +6,5 @@ import org.team14.newsfeed.entity.User;
 
 public interface FollowUserRepository extends JpaRepository<FollowUser, Long> {
 
-    boolean existsByFollowingAndFollowed(User following, User followed);
+    boolean existsByFollowingUserAndFollowedUser(User followingUser, User followedUser);
 }
