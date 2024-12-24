@@ -48,9 +48,10 @@ public class PostController {
 
     }
 
-    @PutMapping("/{Id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long Id, @RequestBody PostUpdateRequestDto updateRequestDto) {
-        PostResponseDto postResponseDto = postService.updatePost(Id, updateRequestDto);
+    // 포스트 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDto updateRequestDto) {
+        PostResponseDto postResponseDto = postService.updatePost(id, updateRequestDto);
 
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }

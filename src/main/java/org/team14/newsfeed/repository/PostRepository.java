@@ -13,12 +13,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 이메일 또는 이름 = " + id));
     }
 
-
+    //이메일로 적힌 모든 포스트를 리스트형태로 보여주기 위함
     List<Post> findAllByUser_Email(String email);
+    //이름으로 적힌 모든 포스트를 리스트형태로 보여주기 위함(동명이인 포함)
+    List<Post> findAllByUser_Username(String name);
 
-    List<Post> findAllByUser_Name(String name);
-
-    List<Post> findAllByUser_EmailAndUser_Name(String email, String name);
+    List<Post> findAllByUser_EmailAndUser_Username(String email, String name);
 
 
 

@@ -63,47 +63,51 @@ public class PostService {
 
             // 작성자명 필터가 존재할 때.
             // 작성자명 (동명이인 포함) 조회
-            posts = postRepository.findAllByUser_Name(name);
+            posts = postRepository.findAllByUser_Username(name);
 
         } else {
             // 이메일, 작성자명 필터가 존재할 때.
             //예외처리
-            posts = postRepository.findAllByUser_EmailAndUser_Name(email, name);
+            posts = postRepository.findAllByUser_EmailAndUser_Username(email, name);
 
         }
 
         if (posts.isEmpty()){
-            throw new CustomRepositoryException(getClass().getSimpleName(), HttpStatus.NOT_FOUND, "작성하고 싶은 에러 메시지");
+            throw new CustomRepositoryException(getClass().getSimpleName(), HttpStatus.NOT_FOUND, "포스트가 없습니다.");
         }
-
+        //포스트를 리스트형태로 변환
         return posts.stream()
                 .map(PostResponseDto::toDto)
                 .toList();
     }
-
+    //포스트를 수정하는 메서드
     @Transactional
-    public PostResponseDto updatePost(Long id, PostUpdateRequestDto updateRequestDto) {
+    public PostResponseDto updatePost(Long Id, PostUpdateRequestDto updateRequestDto) {
 
-        Post post = postRepository.findByIdOrElseThrow(id);
-
+        //포스트를 찾기
+        Post findPost = postRepository.findByIdOrElseThrow(Id);
+        //타이틀이 널이 아닌 경우 타이틀 수정
         if(updateRequestDto.getTitle() != null) {
-            post.setTitle(updateRequestDto.getTitle());
+            findPost.setTitle(updateRequestDto.getTitle());
 
         }
-
+        //내용이 널이 아닌 경우 널 수정
         if(updateRequestDto.getContents() != null) {
-            post.setContents(updateRequestDto.getContents());
+            findPost.setContents(updateRequestDto.getContents());
         }
+        //둘다 널이 아닌 경우 둘다 수정되게 만듦
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
+        return new PostResponseDto(findPost.getId(), findPost.getTitle(), findPost.getContents(), findPost.getUser().getUsername(), findPost.getUser().getEmail());
     }
 
 
+    //삭제 메서드
+    public void delete(Long Id) {
+        //포스트를 찾고
 
-    public void delete(Long id) {
+        Post findPost = postRepository.findByIdOrElseThrow(Id);
 
-        Post findPost = postRepository.findByIdOrElseThrow(id);
-
+        // 이후 삭제
         postRepository.delete(findPost);
     }
 

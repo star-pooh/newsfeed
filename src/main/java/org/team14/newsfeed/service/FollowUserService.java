@@ -28,7 +28,7 @@ public class FollowUserService {
             throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "자신을 팔로우 할수 없습니다");
         }
 
-        if (followUserRepository.existsByFollowingAndFollowed(followingUser, followedUser)) {
+        if (followUserRepository.existsByFollowingUserAndFollowedUser(followingUser, followedUser)) {
             throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "이미 팔로우한 사람입니다.");
         }
 
