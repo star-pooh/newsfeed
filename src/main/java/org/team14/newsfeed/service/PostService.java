@@ -3,9 +3,14 @@ package org.team14.newsfeed.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.team14.newsfeed.dto.PostResponseDto;
+import org.team14.newsfeed.dto.PostUpdateRequestDto;
 import org.team14.newsfeed.entity.Post;
+import org.team14.newsfeed.entity.User;
+import org.team14.newsfeed.exception.CustomRepositoryException;
 import org.team14.newsfeed.repository.PostRepository;
+import org.team14.newsfeed.repository.UserRepository;
 
 import java.util.List;
 
@@ -14,9 +19,25 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
+
+    /**
+     * @param title    제목
+     * @param contents 내용
+     * @param username 사용자 이름
+     * @return
+     */
     public PostResponseDto createPost(String title, String contents, String username) {
-        return null;
+
+        User findUser = userRepository.findUserByUsernameOrElseThrow(username);
+        Post post = Post.of(title, contents, findUser);
+        post.setUser(findUser);
+
+        postRepository.save(post);
+
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
+
     }
 
 
@@ -60,12 +81,30 @@ public class PostService {
                 .toList();
     }
 
+    @Transactional
+    public PostResponseDto updatePost(Long id, PostUpdateRequestDto updateRequestDto) {
+
+        Post post = postRepository.findByIdOrElseThrow(id);
+
+        if(updateRequestDto.getTitle() != null) {
+            post.setTitle(updateRequestDto.getTitle());
+
+        }
+
+        if(updateRequestDto.getContents() != null) {
+            post.setContents(updateRequestDto.getContents());
+        }
+
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
+    }
+
+
+
     public void delete(Long id) {
 
         Post findPost = postRepository.findByIdOrElseThrow(id);
 
         postRepository.delete(findPost);
-
     }
 
 
