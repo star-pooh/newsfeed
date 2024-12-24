@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
+import org.team14.newsfeed.dto.user.FollowUserDeleteRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.service.FollowUserService;
@@ -45,7 +47,6 @@ public class UserController {
                 dto.getEmail(),
                 dto.getPassword());
 
-
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
@@ -56,5 +57,13 @@ public class UserController {
         followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
+    }
+
+    @DeleteMapping("/follow")
+    public ResponseEntity<String> unFollow(@RequestBody FollowUserDeleteRequestDto dto) {
+
+        followUserService.unfollow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
+
+        return ResponseEntity.ok("팔로우가 해제되었습니다");
     }
 }

@@ -34,7 +34,9 @@ public class FollowUserService {
 
         FollowUser follow = FollowUser.createFollowRelationship(followingUser, followedUser);
 
-
         followUserRepository.save(follow);
     }
+
+    public void deleteFollow()
+
 }
