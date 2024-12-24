@@ -1,14 +1,6 @@
 package org.team14.newsfeed.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
@@ -16,27 +8,40 @@ import lombok.Getter;
 @Table(name = "post")
 public class Post extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    // 게시물 ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String title;
+    // 제목
+    @Column(nullable = false)
+    private String title;
 
-  @Column(columnDefinition = "longtext")
-  private String content;
+    // 내용
+    @Column(columnDefinition = "longtext", nullable = false)
+    private String contents;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+    // 사용자 ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-  public Post(String title, String content, User user) {
-    this.title = title;
-    this.content = content;
-    this.user = user;
-  }
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-  public Post() {
+    private Post(String title, String contents, User user) {
+        this.title = title;
+        this.contents = contents;
+        this.user = user;
+    }
 
-  }
+    protected Post() {
+
+    }
+
+    public static Post of(String title, String contents, User user) {
+        return new Post(title, contents, user);
+    }
 }
+
