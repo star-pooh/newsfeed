@@ -11,4 +11,10 @@ public class CustomServiceException extends CustomBaseException {
                                   String errorMessage) {
         super(className, httpStatus, errorMessage);
     }
+
+    public static class ResourceNotFoundException extends RuntimeException {
+        public ResourceNotFoundException(String message) {
+            super(message);
+        }
+    }
 }

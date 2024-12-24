@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.PasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
 import org.team14.newsfeed.entity.User;
+import org.team14.newsfeed.exception.CustomServiceException.ResourceNotFoundException;
 import org.team14.newsfeed.repository.UserRepository;
 
 @Service
@@ -57,4 +59,21 @@ public class UserService {
 
     return UserCreateResponseDto.of(savedUser);
   }
+
+  /*
+  * 사용자 수정 */
+  public User updateUser(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+    // 사용자 조회
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found" + userId));
+
+    // 사용자 정보 수정
+    user.setUsername(userUpdateRequestDto.getUsername());
+    user.setEmail(userUpdateRequestDto.getEmail());
+    // 필요한 경우 다른 필드도 설정 가능
+
+    // 변경 사항 저장
+    return userRepository.save(user);
+  }
+
 }

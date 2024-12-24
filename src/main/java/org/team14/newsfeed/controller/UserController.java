@@ -5,10 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
+import org.team14.newsfeed.entity.User;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
@@ -56,5 +60,15 @@ public class UserController {
         followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
+    }
+
+    /*
+     * 사용자 수정 API */
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserCreateResponseDto> updateUser(
+            @PathVariable Long userId,
+            @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        User updatedUser = userService.updateUser(userId, userUpdateRequestDto);
+        return ResponseEntity.ok(UserCreateResponseDto.of(updatedUser));
     }
 }

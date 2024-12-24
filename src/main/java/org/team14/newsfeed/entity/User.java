@@ -54,4 +54,18 @@ public class User extends BaseEntity {
     public static User of(String username, String email, String password) {
         return new User(username, email, password);
     }
+
+    public void setUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        this.email = email;
+    }
 }
