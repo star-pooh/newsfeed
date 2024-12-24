@@ -2,6 +2,8 @@ package org.team14.newsfeed.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.entity.User;
 
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findUserByUsername(String username);
 
     /**
      * 사용자 조회
@@ -24,4 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE (:username IS NULL OR u.username = :username) " +
             "AND (:email IS NULL OR u.email = :email)")
     List<User> findByUsernameAndEmail(String username, String email);
+
+    default User findUserByUsernameOrElseThrow(String username) {
+        return findUserByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist post" + username));
+    }
 }

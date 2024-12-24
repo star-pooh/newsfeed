@@ -9,7 +9,7 @@ public class CreatePostDto {
 
     private final String title;
 
-    private final String content;
+    private final String contents;
 
     private final String username;
 }
