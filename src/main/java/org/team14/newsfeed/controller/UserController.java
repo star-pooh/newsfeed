@@ -5,9 +5,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
@@ -20,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -33,12 +33,7 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<UserCreateResponseDto> createUser(
-            @Valid @RequestBody UserCreateRequestDto dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // TODO : 전역 예외처리 추가 후 에러 메시지 내용 수정 필요
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력을 확인해주세요.");
-        }
-
+            @Valid @RequestBody UserCreateRequestDto dto) {
         this.userService.checkRegisteredUser(dto.getEmail());
 
         UserCreateResponseDto userCreateResponseDto =
@@ -66,10 +61,10 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserReadResponseDto>> findUser(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false)
             @Pattern(
                     regexp = "^[a-zA-Z0-9_]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
                     message = "이메일 형식이 올바르지 않습니다.")
+            @RequestParam(required = false)
             String email) {
 
         List<UserReadResponseDto> foundUserList = this.userService.findUser(username, email);
