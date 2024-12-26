@@ -79,7 +79,7 @@ public class UserController {
 
     /**
     * 사용자 복구 API */
-    @PostMapping("/{userId}/restore")
+    @PostMapping("/{id}/restore")
     public ResponseEntity<String> restoreUser(
             @PathVariable Long userId,
             @RequestBody @Valid UserDeleteRequestDto dto,

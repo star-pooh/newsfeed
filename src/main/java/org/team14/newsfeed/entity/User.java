@@ -56,8 +56,8 @@ public class User extends BaseEntity {
     }
 
     // 삭제
-    public void setDeleted(boolean deleted) {
-        this.isDeleted = deleted;
+    public void setDeleted() {
+        this.isDeleted = true;
     }
 
     // 사용자 복구
