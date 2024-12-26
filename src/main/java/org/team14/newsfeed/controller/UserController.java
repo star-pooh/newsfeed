@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,14 +66,17 @@ public class UserController {
 
     /**
      * 사용자 수정 API */
-    @PutMapping("/{id}")
-    public UserUpdateResponseDto updateUser(@PathVariable Long userId,
-            @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-        try {
-            UserUpdateResponseDto updatedUser = userService.updateUser(userId, userUpdateRequestDto);
-            return updatedUser;
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 정보 수정 실패", e);
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserUpdateResponseDto> updateUser(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터가 잘못 입력되었습니다.");
         }
+
+        UserUpdateResponseDto updatedUser = userService.updateUser(userId, userUpdateRequestDto);
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
     }
 }

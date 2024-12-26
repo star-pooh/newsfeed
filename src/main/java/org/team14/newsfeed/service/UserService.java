@@ -86,15 +86,21 @@ public class UserService {
       user.updateEmail(userUpdateRequestDto.getEmail());
     }
 
-    // 비밀번호 변경
+    /**
+     * 사용자 비밀번호 수정
+     * 현재 비밀번호의 일치 여부를 확인하고 새 비밀번호를 암호화하여 저장
+     *
+     * @param currentPassword 현재 비밀번호
+     * @param newPassword     새로운 비밀번호
+     * @param passwordEncoder 비밀번호 암호화 도구
+     */
     if (userUpdateRequestDto.getNewPassword() != null) {
       if (!passwordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
         // 비밀번호가 일치하지 않으면 예외 발생
         throw new PasswordMismatchException("현재 비밀번호가 올바르지 않습니다.");
       }
-      user.changePassword(userUpdateRequestDto.getCurrentPassword(),
-              userUpdateRequestDto.getNewPassword(),
-              passwordEncoder);
+
+      user.changePassword(passwordEncoder.encode(userUpdateRequestDto.getNewPassword()));
     }
 
     return UserUpdateResponseDto.of(user);
