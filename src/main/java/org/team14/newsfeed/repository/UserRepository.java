@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     default User findUserByEmailOrElseThrow(String email) {
         return findByEmail(email).orElseThrow(
+
                 () -> new CustomException(HttpStatus.NOT_FOUND,
                         "Dose not exist email" + email));
     }
