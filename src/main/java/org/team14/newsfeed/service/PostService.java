@@ -18,6 +18,7 @@ import org.team14.newsfeed.repository.UserRepository;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final TokenService tokenService;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
@@ -91,17 +92,19 @@ public class PostService {
      *
      * @param Id
      * @param updateRequestDto << 타이틀과 제목을 한번에
-     * @param loggedInEmail 로그인된 이메일
+     * @param token
      * @return
      */
     @Transactional
-    public PostResponseDto updatePost(Long Id, PostUpdateRequestDto updateRequestDto, String loggedInEmail) {
+    public PostResponseDto updatePost(Long Id, String token, PostUpdateRequestDto updateRequestDto) {
+
+        String emailFromToken = tokenService.extractEmailFromToken(token);
 
         //포스트를 찾기
         Post findPost = postRepository.findByIdOrElseThrow(Id);
 
         // 사용자가 생성한 포스트인지 확인
-        if (!findPost.getUser().getEmail().equals(loggedInEmail)) {
+        if (!findPost.getUser().getEmail().equals(emailFromToken)) {
             throw new CustomException(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다.");
         }
 
@@ -115,11 +118,14 @@ public class PostService {
      * @param Id
      */
 
-    public void delete(Long Id, String loggedInEmail) {
+    public void delete(Long Id, String token) {
+
+        String emailFromToken = tokenService.extractEmailFromToken(token);
+
 
         Post findPost = postRepository.findByIdOrElseThrow(Id);
 
-        if (!findPost.getUser().getEmail().equals(loggedInEmail)) {
+        if (!findPost.getUser().getEmail().equals(token)) {
             throw new CustomException(HttpStatus.BAD_REQUEST,"삭제 권한이 없습니다.");
         }
 

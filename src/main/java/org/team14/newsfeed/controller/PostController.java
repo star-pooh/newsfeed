@@ -1,6 +1,8 @@
 package org.team14.newsfeed.controller;
 
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.team14.newsfeed.dto.CreatePostDto;
 import org.team14.newsfeed.dto.PostResponseDto;
 import org.team14.newsfeed.dto.PostUpdateRequestDto;
+import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.service.PostService;
 
 import java.util.List;
@@ -56,16 +59,23 @@ public class PostController {
      *
      * @param id
      * @param updateRequestDto << 타이틀과 제목을 한번에
-     * @param email
+     * @param request
      * @return
      */
     // 포스트 수정
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDto updateRequestDto, String email) {
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDto updateRequestDto, HttpServletRequest request) {
 
-        PostResponseDto postResponseDto = postService.updatePost(id, updateRequestDto, email);
+        String token = request.getHeader("Authorization");
 
-        return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            PostResponseDto postResponseDto = postService.updatePost(id, token, updateRequestDto);
+
+            return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
     }
 
     /**
@@ -75,9 +85,12 @@ public class PostController {
      */
     //삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id, String email) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, HttpServletRequest request) {
 
-        postService.delete(id, email);
+        String token = request.getHeader("Authorization");
+
+
+        postService.delete(id, token);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
