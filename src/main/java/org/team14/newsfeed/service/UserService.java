@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
@@ -38,13 +37,9 @@ public class UserService {
         }
 
         if (foundUser.isDeleted()) {
-            log.error("[UserService.checkRegisteredUser] 탈퇴한 이메일로 가입 시도 : {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST, "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
         } else {
-            log.error("[UserService.checkRegisteredUser] 등록된 이메일로 가입 시도 : {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "이미 등록된 이메일입니다. email : " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다. email : " + email);
         }
     }
 
@@ -121,14 +116,12 @@ public class UserService {
 
         // 이미 삭제된 사용자 여부 확인
         if (user.isDeleted()) {
-            log.error("[UserService.deleteUserByEmail] 이미 탈퇴한 사용자입니다. email: {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
         }
 
         // 비밀번호 검증
         if (!userPasswordEncoder.matches(password, user.getPassword())) {
-            log.error("[UserService.deleteUserByEmail] 비밀번호가 일치하지 않습니다. email: {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
         // 사용자 삭제 처리
@@ -150,7 +143,7 @@ public class UserService {
 
         // 비밀번호 검증
         if (!userPasswordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
         // 복구 가능 여부 확인 및 복구

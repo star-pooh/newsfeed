@@ -31,7 +31,8 @@ public class PostService {
      * @return 생성된 뉴스 피드 정보
      */
     public PostResponseDto createPost(String title, String contents, String username) {
-        User findUser = userRepository.findByUsernameOrElseThrow(username);
+        User findUser = userRepository.findByUsername(username).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + username));
 
         Post post = Post.of(title, contents, findUser);
         postRepository.save(post);

@@ -28,8 +28,10 @@ public class FollowUserService {
     public void follow(String token, String followed) {
         String following = tokenService.extractEmailFromToken(token);
 
-        User followedUser = userRepository.findByUsernameOrElseThrow(followed);
-        User followingUser = userRepository.findByUsernameOrElseThrow(following);
+        User followedUser = userRepository.findByUsername(followed).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + followed));
+        User followingUser = userRepository.findByUsername(following).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + following));
 
         if (following.equals(followed)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "자신을 팔로우 할 수 없습니다");
@@ -54,8 +56,10 @@ public class FollowUserService {
     public void unfollow(String token, String followed) {
         String following = tokenService.extractEmailFromToken(token);
 
-        User followedUser = userRepository.findByEmailOrElseThrow(followed);
-        User followingUser = userRepository.findByEmailOrElseThrow(following);
+        User followedUser = userRepository.findByEmail(followed).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + followed));
+        User followingUser = userRepository.findByEmail(following).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + following));
 
         if (followed.equals(following)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "자신을 언팔로우 할 수 없습니다.");
