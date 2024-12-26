@@ -16,7 +16,6 @@ import org.team14.newsfeed.repository.UserRepository;
 @RequiredArgsConstructor
 public class FollowUserService {
 
-
     private final FollowUserRepository followUserRepository;
     private final UserRepository userRepository;
 
@@ -30,12 +29,10 @@ public class FollowUserService {
                     "자신을 팔로우 할 수 없습니다");
         }
 
-
         if (followUserRepository.existsByFollowingUserAndFollowedUser(followingUser,
                 followedUser)) {
             throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST,
                     "이미 팔로우한 사람입니다.");
-
         }
 
         FollowUser follow = FollowUser.createFollowRelationship(followingUser, followedUser);

@@ -33,7 +33,7 @@ public class UserController {
      * @param dto 사용자 생성에 필요한 요청 데이터
      * @return 생성된 사용자 정보
      */
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<UserCreateResponseDto> createUser(
             @Valid @RequestBody UserCreateRequestDto dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
