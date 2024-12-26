@@ -11,12 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.team14.newsfeed.exception.CustomException;
 
+
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class JwtFilter extends GenericFilterBean {
 
     // HTTP 요청 헤더에서 JWT 토큰을 찾을 키

@@ -71,7 +71,8 @@ public class UserService {
     }
 
     public List<UserReadResponseDto> findUser(String username, String email) {
-        return this.userRepository.findByUsernameAndEmail(username, email).stream().map(
-                UserReadResponseDto::of).toList();
+        return this.userRepository.findByUsernameAndEmail(username, email).stream()
+                .map(UserReadResponseDto::of).toList();
+
     }
 }

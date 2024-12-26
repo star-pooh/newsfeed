@@ -107,4 +107,13 @@ public class UserController {
 
         return new ResponseEntity<>(foundUserList, HttpStatus.OK);
     }
+
+    @DeleteMapping("/follow")
+    public ResponseEntity<String> unFollow(@Valid @RequestBody FollowUserDeleteRequestDto dto) {
+
+        followUserService.unfollow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
+
+        return ResponseEntity.ok("팔로우가 해제되었습니다");
+
+    }
 }
