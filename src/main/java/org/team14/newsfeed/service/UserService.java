@@ -13,7 +13,6 @@ import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
 import org.team14.newsfeed.dto.user.UserUpdateResponseDto;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomException;
-import org.team14.newsfeed.exception.ResourceNotFoundException;
 import org.team14.newsfeed.repository.UserRepository;
 
 import java.util.List;
@@ -80,7 +79,7 @@ public class UserService {
     public UserUpdateResponseDto updateUser(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
         // 사용자 존재 여부 확인
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "User not found: " + userId));
 
         // 사용자 이름 변경
         user.updateUsername(userUpdateRequestDto.getUsername());
@@ -115,7 +114,7 @@ public class UserService {
     public void deleteUserByEmail(String email, String password) {
         // 사용자 조회
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. email: " + email));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다. email: " + email));
 
         // 이미 삭제된 사용자 여부 확인
         if (user.isDeleted()) {
@@ -139,7 +138,7 @@ public class UserService {
     public void restoreUser(Long userId, String password) {
         // 사용자 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. userId: " + userId));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다. userId: " + userId));
 
         // 비밀번호 검증
         if (!userPasswordEncoder.matches(password, user.getPassword())) {
@@ -153,6 +152,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void checkAuthentication(String email, String password) {
+        User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
+
+        if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+        }
+    }
+
     /**
      * 사용자 조회
      * <p>
@@ -162,15 +169,6 @@ public class UserService {
      * @param email    이메일
      * @return 조회된 사용자 정보
      */
-
-    public void checkAuthentication(String email, String password) {
-        User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
-
-        if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
-        }
-    }
-
     public List<UserReadResponseDto> findUser(String username, String email) {
         return this.userRepository.findByUsernameAndEmail(username, email).stream()
                 .map(UserReadResponseDto::of).toList();
