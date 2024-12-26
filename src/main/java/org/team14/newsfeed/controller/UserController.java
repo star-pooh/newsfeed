@@ -1,14 +1,17 @@
 package org.team14.newsfeed.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.*;
+import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -28,30 +32,51 @@ public class UserController {
      * @param dto 사용자 생성에 필요한 요청 데이터
      * @return 생성된 사용자 정보
      */
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<UserCreateResponseDto> createUser(
-            @Valid @RequestBody UserCreateRequestDto dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // TODO : 전역 예외처리 추가 후 에러 메시지 내용 수정 필요
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력을 확인해주세요.");
-        }
-
+            @Valid @RequestBody UserCreateRequestDto dto) {
         this.userService.checkRegisteredUser(dto.getEmail());
 
-        UserCreateResponseDto userCreateResponseDto =
-                this.userService.createUser(dto.getUsername(), dto.getEmail(), dto.getPassword());
+        UserCreateResponseDto userCreateResponseDto = this.userService.createUser(dto.getUsername(),
+                dto.getEmail(),
+                dto.getPassword());
 
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
-
-    //TODO : session이 완성되면 세션을 통해 로그인되어있는 사람의 email 가져오는 로직으로 변경
     @PostMapping("/follow")
-    public ResponseEntity<String> follow(@RequestBody FollowUserCreateRequestDto dto) {
+    public ResponseEntity<String> follow(@Valid @RequestBody FollowUserCreateRequestDto dto,
+                                         HttpServletRequest request) {
 
-        followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
+        String token = request.getHeader("Authorization");
 
-        return ResponseEntity.ok("팔로우가 완료되었습니다.");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            followUserService.follow(token, dto.getFollowedUserEmail());
+
+            return ResponseEntity.ok("팔로우가 완료되었습니다.");
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
+    }
+
+    /**
+     * @param dto 사용자 email, 팔로우 대상(target) email
+     * @return
+     */
+
+    @DeleteMapping("/follow")
+    public ResponseEntity<String> unFollow(
+            @Valid @RequestBody FollowUserDeleteRequestDto dto, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            followUserService.unfollow(token, dto.getFollowedUserEmail());
+
+            return ResponseEntity.ok("언팔로우가 완료되었습니다.");
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
     }
 
     /**
@@ -114,10 +139,10 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserReadResponseDto>> findUser(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false)
             @Pattern(
                     regexp = "^[a-zA-Z0-9_]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
                     message = "이메일 형식이 올바르지 않습니다.")
+            @RequestParam(required = false)
             String email) {
 
         List<UserReadResponseDto> foundUserList = this.userService.findUser(username, email);

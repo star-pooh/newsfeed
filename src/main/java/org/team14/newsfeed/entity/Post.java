@@ -31,17 +31,32 @@ public class Post extends BaseEntity {
     }
 
     private Post(String title, String contents, User user) {
+
         this.title = title;
+
         this.contents = contents;
+
         this.user = user;
     }
 
     protected Post() {
-
     }
 
     public static Post of(String title, String contents, User user) {
+
         return new Post(title, contents, user);
     }
+
+    public void updateTitleAndContents(String title, String contents){
+
+        if(title != null){
+            this.title = title;
+        }
+
+        if(contents != null){
+            this.contents = contents;
+        }
+    }
+
 }
 

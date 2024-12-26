@@ -34,17 +34,20 @@ public class User extends BaseEntity {
     private boolean isDeleted;
 
     // 팔로우
-    @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "followingUser", fetch = FetchType.LAZY)
     private List<FollowUser> following;
 
 
-    @OneToMany(mappedBy = "followed", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
     private List<FollowUser> followed;
 
 
     private User(String username, String email, String password) {
+
         this.username = username;
+
         this.email = email;
+
         this.password = password;
     }
 
@@ -60,6 +63,7 @@ public class User extends BaseEntity {
      * @return 생성된 사용자 객체
      */
     public static User of(String username, String email, String password) {
+
         return new User(username, email, password);
     }
 
@@ -74,6 +78,7 @@ public class User extends BaseEntity {
             throw new IllegalStateException("이미 활성화된 계정입니다.");
         }
         this.isDeleted = false;
+    }
 
     /**
      * 사용자 이름 수정
