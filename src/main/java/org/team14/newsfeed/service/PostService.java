@@ -27,7 +27,7 @@ public class PostService {
      */
     public PostResponseDto createPost(String title, String contents, String username) {
 
-        User findUser = userRepository.findUserByUsernameOrElseThrow(username);
+        User findUser = userRepository.findByUsernameOrElseThrow(username);
         Post post = Post.of(title, contents, findUser);
         post.setUser(findUser);
 

@@ -21,8 +21,8 @@ public class FollowUserService {
 
     public void follow(String following, String followed) {
 
-        User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
-        User followingUser = userRepository.findUserByEmailOrElseThrow(following);
+        User followedUser = userRepository.findByUsernameOrElseThrow(followed);
+        User followingUser = userRepository.findByUsernameOrElseThrow(following);
 
         if (following.equals(followed)) {
             throw new CustomServiceException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "자신을 팔로우 할수 없습니다");
