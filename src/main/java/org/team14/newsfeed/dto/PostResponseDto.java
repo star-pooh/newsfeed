@@ -14,6 +14,7 @@ public class PostResponseDto {
     private final String title;
 
     private final String contents;
+
     private final String username;
 
     private final String email;
@@ -21,9 +22,24 @@ public class PostResponseDto {
 
     public static PostResponseDto toDto(Post post) {
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(),
-                post.getUser().getUsername(), post.getUser().getEmail());
+        return new PostResponseDto(
+            post.getId(),
+            post.getTitle(),
+            post.getContents(),
+            post.getUser().getUsername(),
+            post.getUser().getEmail()
+        );
+    }
 
+    public static PostResponseDto fromEntity(Post post) {
+
+        return new PostResponseDto(
+            post.getId(),
+            post.getTitle(),
+            post.getContents(),
+            post.getUser().getUsername(),
+            post.getUser().getEmail()
+        );
     }
 
 }

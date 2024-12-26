@@ -17,11 +17,13 @@ import org.team14.newsfeed.repository.UserRepository;
 public class FollowUserService {
 
     private final FollowUserRepository followUserRepository;
+
     private final UserRepository userRepository;
 
     public void follow(String following, String followed) {
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
+
         User followingUser = userRepository.findUserByEmailOrElseThrow(following);
 
         if (following.equals(followed)) {
@@ -42,7 +44,9 @@ public class FollowUserService {
 
     @Transactional
     public void unfollow(String following, String followed) {
+
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
+
         User followingUser = userRepository.findUserByEmailOrElseThrow(following);
 
         if (followed.equals(following)) {

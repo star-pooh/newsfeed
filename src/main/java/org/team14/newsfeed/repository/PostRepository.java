@@ -21,5 +21,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByUser_EmailAndUser_Username(String email, String name);
 
-
 }

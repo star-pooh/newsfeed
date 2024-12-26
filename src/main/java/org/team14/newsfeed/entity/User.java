@@ -49,8 +49,11 @@ public class User extends BaseEntity {
 
 
     private User(String username, String email, String password) {
+
         this.username = username;
+
         this.email = email;
+
         this.password = password;
     }
 
@@ -58,6 +61,7 @@ public class User extends BaseEntity {
     }
 
     public static User of(String username, String email, String password) {
+
         return new User(username, email, password);
     }
 }
