@@ -11,7 +11,6 @@ import org.team14.newsfeed.exception.CustomException;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-
     @Value("${jwt.secret}")
     private String key;
 

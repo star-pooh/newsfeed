@@ -15,12 +15,9 @@ import org.team14.newsfeed.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class FollowUserService {
-
     private final FollowUserRepository followUserRepository;
-
     private final UserRepository userRepository;
     private final TokenService tokenService;
-
 
     /**
      * 대상 사용자를 팔로우
@@ -31,18 +28,17 @@ public class FollowUserService {
     public void follow(String token, String followed) {
         String following = tokenService.extractEmailFromToken(token);
 
-        User followedUser = userRepository.findByUsernameOrElseThrow(followed);
-        User followingUser = userRepository.findByUsernameOrElseThrow(following);
+        User followedUser = userRepository.findByUsername(followed).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + followed));
+        User followingUser = userRepository.findByUsername(following).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + following));
 
         if (following.equals(followed)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
-                    "자신을 팔로우 할 수 없습니다");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "자신을 팔로우 할 수 없습니다");
         }
 
-        if (followUserRepository.existsByFollowingUserAndFollowedUser(followingUser,
-                followedUser)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
-                    "이미 팔로우한 사람입니다.");
+        if (followUserRepository.existsByFollowingUserAndFollowedUser(followingUser, followedUser)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 팔로우한 사람입니다.");
         }
 
         FollowUser follow = FollowUser.createFollowRelationship(followingUser, followedUser);
@@ -57,24 +53,22 @@ public class FollowUserService {
      * @param followed 팔로우 대상(target)
      */
     @Transactional
-
     public void unfollow(String token, String followed) {
         String following = tokenService.extractEmailFromToken(token);
 
-        User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
-
-        User followingUser = userRepository.findUserByEmailOrElseThrow(following);
+        User followedUser = userRepository.findByEmail(followed).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + followed));
+        User followingUser = userRepository.findByEmail(following).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + following));
 
         if (followed.equals(following)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
-                    "자신을 언팔로우 할 수 없습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "자신을 언팔로우 할 수 없습니다.");
         }
 
-        if (followUserRepository.findByFollowingUserAndFollowedUser(followingUser, followedUser)
-                .isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
-                    "팔로우 관계가 존재하지 않습니다");
+        if (followUserRepository.findByFollowingUserAndFollowedUser(followingUser, followedUser).isEmpty()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "팔로우 관계가 존재하지 않습니다");
         }
+
         followUserRepository.deleteByFollowingUserAndFollowedUser(followingUser, followedUser);
     }
 }

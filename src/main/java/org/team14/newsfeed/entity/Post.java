@@ -26,10 +26,6 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     private Post(String title, String contents, User user) {
 
         this.title = title;
@@ -47,13 +43,13 @@ public class Post extends BaseEntity {
         return new Post(title, contents, user);
     }
 
-    public void updateTitleAndContents(String title, String contents){
+    public void updateTitleAndContents(String title, String contents) {
 
-        if(title != null){
+        if (title != null) {
             this.title = title;
         }
 
-        if(contents != null){
+        if (contents != null) {
             this.contents = contents;
         }
     }

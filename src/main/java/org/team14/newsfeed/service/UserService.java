@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
@@ -22,7 +21,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
     private final UserPasswordEncoder userPasswordEncoder;
     private final UserRepository userRepository;
 
@@ -34,19 +32,14 @@ public class UserService {
     public void checkRegisteredUser(String email) {
         User foundUser = this.userRepository.findByEmail(email).orElse(null);
 
-
         if (Objects.isNull(foundUser)) {
             return;
         }
 
         if (foundUser.isDeleted()) {
-            log.error("[UserService.checkRegisteredUser] 탈퇴한 이메일로 가입 시도 : {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST, "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
         } else {
-            log.error("[UserService.checkRegisteredUser] 등록된 이메일로 가입 시도 : {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "이미 등록된 이메일입니다. email : " + email);
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다. email : " + email);
         }
     }
 
@@ -90,7 +83,7 @@ public class UserService {
             user.updateEmail(userUpdateRequestDto.getEmail());
         }
 
-        /**
+        /*
          * 사용자 비밀번호 수정
          * 현재 비밀번호의 일치 여부를 확인하고 새 비밀번호를 암호화하여 저장
          *
@@ -110,7 +103,12 @@ public class UserService {
         return UserUpdateResponseDto.of(user);
     }
 
-    // 사용자 삭제
+    /**
+     * 사용자 삭제
+     *
+     * @param email    이메일
+     * @param password 비밀번호
+     */
     public void deleteUserByEmail(String email, String password) {
         // 사용자 조회
         User user = userRepository.findByEmail(email)
@@ -118,14 +116,12 @@ public class UserService {
 
         // 이미 삭제된 사용자 여부 확인
         if (user.isDeleted()) {
-            log.error("[UserService.deleteUserByEmail] 이미 탈퇴한 사용자입니다. email: {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
         }
 
         // 비밀번호 검증
         if (!userPasswordEncoder.matches(password, user.getPassword())) {
-            log.error("[UserService.deleteUserByEmail] 비밀번호가 일치하지 않습니다. email: {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
         // 사용자 삭제 처리
@@ -134,7 +130,12 @@ public class UserService {
     }
 
 
-    // 사용자 복구
+    /**
+     * 사용자 복구
+     *
+     * @param userId   사용자 ID
+     * @param password 비밀번호
+     */
     public void restoreUser(Long userId, String password) {
         // 사용자 조회
         User user = userRepository.findById(userId)
@@ -142,7 +143,7 @@ public class UserService {
 
         // 비밀번호 검증
         if (!userPasswordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
         // 복구 가능 여부 확인 및 복구
@@ -153,7 +154,8 @@ public class UserService {
     }
 
     public void checkAuthentication(String email, String password) {
-        User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
+        User foundUser = this.userRepository.findByEmail(email).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
 
         if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
@@ -174,5 +176,4 @@ public class UserService {
                 .map(UserReadResponseDto::of).toList();
 
     }
-
 }

@@ -6,10 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.*;
 import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.service.FollowUserService;
@@ -44,10 +42,16 @@ public class UserController {
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
+    /**
+     * 팔로우 API
+     *
+     * @param dto     팔로우에 필요한 요청 데이터
+     * @param request HttpServletRequest
+     * @return 결과 메시지
+     */
     @PostMapping("/follow")
     public ResponseEntity<String> follow(@Valid @RequestBody FollowUserCreateRequestDto dto,
                                          HttpServletRequest request) {
-
         String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {
@@ -61,10 +65,12 @@ public class UserController {
     }
 
     /**
-     * @param dto 사용자 email, 팔로우 대상(target) email
-     * @return
+     * 언팔로우 API
+     *
+     * @param dto     언팔로우에 필요한 요청 데이터
+     * @param request HttpServletRequest
+     * @return 결과 메시지
      */
-
     @DeleteMapping("/follow")
     public ResponseEntity<String> unFollow(
             @Valid @RequestBody FollowUserDeleteRequestDto dto, HttpServletRequest request) {
@@ -81,14 +87,12 @@ public class UserController {
 
     /**
      * 사용자 삭제 API
+     *
+     * @param dto 삭제에 필요한 요청 데이터
+     * @return 삭제 결과
      */
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(@RequestBody @Valid UserDeleteRequestDto dto,
-                                             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
-        }
-
+    public ResponseEntity<String> deleteUser(@RequestBody @Valid UserDeleteRequestDto dto) {
         // 이메일과 비밀번호를 전달하여 삭제 처리
         userService.deleteUserByEmail(dto.getEmail(), dto.getPassword());
 
@@ -97,34 +101,32 @@ public class UserController {
 
     /**
      * 사용자 복구 API
+     *
+     * @param id  사용자 ID
+     * @param dto 복구에 필요한 요청 데이터
+     * @return 복구 결과 메시지
      */
     @PostMapping("/{id}/restore")
     public ResponseEntity<String> restoreUser(
-            @PathVariable Long userId,
-            @RequestBody @Valid UserDeleteRequestDto dto,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
-        }
-
-        userService.restoreUser(userId, dto.getPassword());
+            @PathVariable Long id,
+            @RequestBody @Valid UserDeleteRequestDto dto) {
+        userService.restoreUser(id, dto.getPassword());
 
         return ResponseEntity.ok("사용자가 정상적으로 복구되었습니다.");
     }
 
     /**
      * 사용자 수정 API
+     *
+     * @param id                   사용자 ID
+     * @param userUpdateRequestDto 수정에 필요한 요청 데이터
+     * @return 수정된 사용자 정보
      */
     @PatchMapping("/{id}")
     public ResponseEntity<UserUpdateResponseDto> updateUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터가 잘못 입력되었습니다.");
-        }
-
-        UserUpdateResponseDto updatedUser = userService.updateUser(userId, userUpdateRequestDto);
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        UserUpdateResponseDto updatedUser = userService.updateUser(id, userUpdateRequestDto);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.CREATED);
     }
@@ -144,7 +146,6 @@ public class UserController {
                     message = "이메일 형식이 올바르지 않습니다.")
             @RequestParam(required = false)
             String email) {
-
         List<UserReadResponseDto> foundUserList = this.userService.findUser(username, email);
 
         return new ResponseEntity<>(foundUserList, HttpStatus.OK);

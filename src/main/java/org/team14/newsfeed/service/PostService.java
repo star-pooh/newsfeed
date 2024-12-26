@@ -12,7 +12,6 @@ import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.repository.PostRepository;
 import org.team14.newsfeed.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,37 +22,34 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-
     /**
+     * 뉴스 피드 생성
+     *
      * @param title    제목
      * @param contents 내용
      * @param username 사용자 이름
-     * @return
+     * @return 생성된 뉴스 피드 정보
      */
     public PostResponseDto createPost(String title, String contents, String username) {
-
-        User findUser = userRepository.findByUsernameOrElseThrow(username);
+        User findUser = userRepository.findByUsername(username).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + username));
 
         Post post = Post.of(title, contents, findUser);
-        post.setUser(findUser);
-
         postRepository.save(post);
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(),
-                post.getUser().getUsername(), post.getUser().getEmail());
+        return PostResponseDto.toDto(post);
     }
 
-
     /**
-     * 포스트 조회
+     * 뉴스 피드 조회
      *
      * @param email 사용자 이메일
      * @param name  사용자 이름
-     * @return
+     * @return 조회된 뉴스 피드 정보;
      */
     public List<PostResponseDto> findPostsByOptionalFilters(String email, String name) {
 
-        List<Post> posts = new ArrayList<>();
+        List<Post> posts;
 
         if (email == null && name == null) {
             // 아무 필터도 존재하지 않음.
@@ -89,44 +85,40 @@ public class PostService {
     }
 
     /**
-     * 포스트를 수정하는 메서드
+     * 뉴스 피드 수정
      *
-     * @param Id
-     * @param updateRequestDto << 타이틀과 제목을 한번에
-     * @param token
-     * @return
+     * @param id               뉴스 피드 ID
+     * @param updateRequestDto 수정에 필요한 요청 데이터
+     * @param token            JWT 토큰
+     * @return 수정된 뉴스 피드 정보
      */
     @Transactional
-    public PostResponseDto updatePost(Long Id, String token,
-                                      PostUpdateRequestDto updateRequestDto) {
-
+    public PostResponseDto updatePost(Long id, String token, PostUpdateRequestDto updateRequestDto) {
         String emailFromToken = tokenService.extractEmailFromToken(token);
 
         //포스트를 찾기
-        Post findPost = postRepository.findByIdOrElseThrow(Id);
+        Post findPost = postRepository.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 이메일 또는 이름 = " + id));
 
         // 사용자가 생성한 포스트인지 확인
         if (!findPost.getUser().getEmail().equals(emailFromToken)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
 
-        findPost.updateTitleAndContents(updateRequestDto.getTitle(),
-                updateRequestDto.getContents());
+        findPost.updateTitleAndContents(updateRequestDto.getTitle(), updateRequestDto.getContents());
 
-        return PostResponseDto.fromEntity(findPost);
+        return PostResponseDto.toDto(findPost);
     }
 
     /**
-     * 포스트 삭제
+     * 뉴스 피드 삭제
      *
-     * @param Id
+     * @param id    뉴스 피드 ID
+     * @param token JWT 토큰
      */
-
-    public void delete(Long Id, String token) {
-
+    public void delete(Long id, String token) {
         String tokenFromEmail = tokenService.extractEmailFromToken(token);
 
-        Post findPost = postRepository.findByIdOrElseThrow(Id);
+        Post findPost = postRepository.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "존재하지 않는 이메일 또는 이름 = " + id));
 
         if (!findPost.getUser().getEmail().equals(tokenFromEmail)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
