@@ -22,7 +22,9 @@ public class FollowUser {
     private User followedUser;
 
     private FollowUser(User followingUser, User followedUser) {
+
         this.followingUser = followingUser;
+
         this.followedUser = followedUser;
     }
 
@@ -30,6 +32,7 @@ public class FollowUser {
     }
 
     public static FollowUser createFollowRelationship(User following, User followed) {
+
         return new FollowUser(following, followed);
     }
 }

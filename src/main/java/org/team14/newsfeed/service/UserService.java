@@ -30,6 +30,7 @@ public class UserService {
     public void checkRegisteredUser(String email) {
         User foundUser = this.userRepository.findByEmail(email).orElse(null);
 
+
         if (Objects.isNull(foundUser)) {
             return;
         }
@@ -61,6 +62,7 @@ public class UserService {
 
         return UserCreateResponseDto.of(savedUser);
     }
+
 
     public void checkAuthentication(String email, String password) {
         User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);

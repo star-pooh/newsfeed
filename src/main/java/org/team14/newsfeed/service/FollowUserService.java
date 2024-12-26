@@ -17,6 +17,7 @@ import org.team14.newsfeed.repository.UserRepository;
 public class FollowUserService {
 
     private final FollowUserRepository followUserRepository;
+
     private final UserRepository userRepository;
     private final TokenService tokenService;
 
@@ -31,6 +32,7 @@ public class FollowUserService {
         String following = tokenService.extractEmailFromToken(token);
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
+
         User followingUser = userRepository.findUserByEmailOrElseThrow(following);
 
         if (following.equals(followed)) {
@@ -56,10 +58,12 @@ public class FollowUserService {
      * @param followed 팔로우 대상(target)
      */
     @Transactional
+
     public void unfollow(String token, String followed) {
         String following = tokenService.extractEmailFromToken(token);
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
+
         User followingUser = userRepository.findUserByEmailOrElseThrow(following);
 
         if (followed.equals(following)) {

@@ -36,11 +36,15 @@ public class PostController {
         return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
-    //전체 조회
+    /**
+     *
+     * @param email
+     * @param name
+     * @return
+     */
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> findPostsByOptionalFilters(@RequestParam(required = false) String email,
                                                                             @RequestParam(required = false) String name) {
-
 
         List<PostResponseDto> postResponseDtoList = postService.findPostsByOptionalFilters(email, name);
 
@@ -48,20 +52,32 @@ public class PostController {
 
     }
 
+    /**
+     *
+     * @param id
+     * @param updateRequestDto << 타이틀과 제목을 한번에
+     * @param email
+     * @return
+     */
     // 포스트 수정
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDto updateRequestDto) {
-        PostResponseDto postResponseDto = postService.updatePost(id, updateRequestDto);
+    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDto updateRequestDto, String email) {
+
+        PostResponseDto postResponseDto = postService.updatePost(id, updateRequestDto, email);
 
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 
-
+    /**
+     *
+     * @param id
+     * @return
+     */
     //삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, String email) {
 
-        postService.delete(id);
+        postService.delete(id, email);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

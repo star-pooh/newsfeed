@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class PostUpdateRequestDto {
+
   private final String title;
+
   private final String contents;
+
 }
