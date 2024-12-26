@@ -64,7 +64,7 @@ public class SecurityConfig {
                 // 인증이 필요 없는 URL과 인증이 필요한 요청 정의
                 .logout(logout -> logout.disable())
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/login", "/users/signup", "/users/{id}/restore").permitAll()
+                        .requestMatchers("/login", "/users/signup", "/users/*/restore").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").authenticated()
                         .anyRequest().authenticated())
 
