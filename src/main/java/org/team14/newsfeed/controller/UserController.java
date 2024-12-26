@@ -1,6 +1,7 @@
 package org.team14.newsfeed.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,20 @@ import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
 import org.team14.newsfeed.dto.user.FollowUserDeleteRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
     private final FollowUserService followUserService;
-
 
     /**
      * 사용자 생성 API
@@ -35,17 +39,13 @@ public class UserController {
      */
     @PostMapping("/signup")
     public ResponseEntity<UserCreateResponseDto> createUser(
-            @Valid @RequestBody UserCreateRequestDto dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // TODO : 전역 예외처리 추가 후 에러 메시지 내용 수정 필요
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력을 확인해주세요.");
-        }
-
+            @Valid @RequestBody UserCreateRequestDto dto) {
         this.userService.checkRegisteredUser(dto.getEmail());
 
         UserCreateResponseDto userCreateResponseDto = this.userService.createUser(dto.getUsername(),
                 dto.getEmail(),
                 dto.getPassword());
+
 
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
@@ -58,6 +58,25 @@ public class UserController {
 
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
     }
+    /**
+     * 사용자 조회 API
+     *
+     * @param username 사용자 이름
+     * @param email    이메일
+     * @return 조회된 사용자 정보
+     */
+    @GetMapping
+    public ResponseEntity<List<UserReadResponseDto>> findUser(
+            @RequestParam(required = false) String username,
+            @Pattern(
+                    regexp = "^[a-zA-Z0-9_]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+                    message = "이메일 형식이 올바르지 않습니다.")
+            @RequestParam(required = false)
+            String email) {
+
+        List<UserReadResponseDto> foundUserList = this.userService.findUser(username, email);
+
+        return new ResponseEntity<>(foundUserList, HttpStatus.OK);
 
     @DeleteMapping("/follow")
     public ResponseEntity<String> unFollow(@Valid @RequestBody FollowUserDeleteRequestDto dto) {
@@ -65,5 +84,6 @@ public class UserController {
         followUserService.unfollow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
 
         return ResponseEntity.ok("팔로우가 해제되었습니다");
+
     }
 }

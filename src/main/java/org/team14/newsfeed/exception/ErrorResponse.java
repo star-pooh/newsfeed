@@ -1,11 +1,19 @@
 package org.team14.newsfeed.exception;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.Getter;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+/**
+ * Exception에 대한 ErrorResponse 생성
+ */
 @Getter
 public class ErrorResponse {
 
@@ -24,34 +32,37 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    /**
-     * CustomException에 대한 ErrorResponse 생성
-     *
-     * @param e   CustomException
-     * @param <T> CustomException
-     * @return response
-     */
-    public static <T extends CustomBaseException> Map<String, Object> createErrorResponseFromCustomException(
-            T e) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", e.getHttpStatus().value());
-        response.put("httpStatus", e.getHttpStatus());
-        response.put("message", e.getErrorMessage());
-
-        return response;
+    public static Map<String, Object> ofCustomException(CustomException e) {
+        return createErrorResponse(e.getHttpStatus(), e.getErrorMessage());
     }
 
-    /**
-     * CustomException 이외의 Exception에 대한 ErrorResponse 생성
-     *
-     * @param httpStatus HttpStatus
-     * @return response
-     */
-    public static Map<String, Object> createErrorResponseFromException(HttpStatus httpStatus) {
+    public static Map<String, Object> ofMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult().getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining("\n"));
+
+        return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    public static Map<String, Object> ofConstraintViolationException(ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining("\n"));
+
+        return createErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
+    }
+
+    public static Map<String, Object> ofException(HttpStatus httpStatus, Exception e) {
+        return createErrorResponse(httpStatus, e.getMessage());
+    }
+
+    private static Map<String, Object> createErrorResponse(HttpStatus httpStatus, String errorMessage) {
         Map<String, Object> response = new HashMap<>();
         response.put("code", httpStatus.value());
         response.put("httpStatus", httpStatus);
-        response.put("message", "예기치 못한 에러가 발생했습니다.");
+        response.put("message", errorMessage);
 
         return response;
     }

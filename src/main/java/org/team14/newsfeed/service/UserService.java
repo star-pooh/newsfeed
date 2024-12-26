@@ -7,17 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomRepositoryException;
 import org.team14.newsfeed.repository.UserRepository;
-
+import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
     private final UserPasswordEncoder userPasswordEncoder;
     private final UserRepository userRepository;
 
