@@ -1,13 +1,13 @@
 package org.team14.newsfeed.service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team14.newsfeed.dto.PostResponseDto;
-import org.team14.newsfeed.dto.PostUpdateRequestDto;
+import org.team14.newsfeed.dto.post.PostResponseDto;
+import org.team14.newsfeed.dto.post.PostUpdateRequestDto;
 import org.team14.newsfeed.entity.Post;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomException;
@@ -39,7 +39,8 @@ public class PostService {
 
         postRepository.save(post);
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(),
+                post.getUser().getUsername(), post.getUser().getEmail());
     }
 
 
@@ -88,7 +89,7 @@ public class PostService {
     }
 
     /**
-     *포스트를 수정하는 메서드
+     * 포스트를 수정하는 메서드
      *
      * @param Id
      * @param updateRequestDto << 타이틀과 제목을 한번에
@@ -96,7 +97,8 @@ public class PostService {
      * @return
      */
     @Transactional
-    public PostResponseDto updatePost(Long Id, String token, PostUpdateRequestDto updateRequestDto) {
+    public PostResponseDto updatePost(Long Id, String token,
+            PostUpdateRequestDto updateRequestDto) {
 
         String emailFromToken = tokenService.extractEmailFromToken(token);
 
@@ -105,16 +107,18 @@ public class PostService {
 
         // 사용자가 생성한 포스트인지 확인
         if (!findPost.getUser().getEmail().equals(emailFromToken)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
 
-        findPost.updateTitleAndContents(updateRequestDto.getTitle(), updateRequestDto.getContents());
+        findPost.updateTitleAndContents(updateRequestDto.getTitle(),
+                updateRequestDto.getContents());
 
         return PostResponseDto.fromEntity(findPost);
     }
 
     /**
      * 포스트 삭제
+     *
      * @param Id
      */
 
@@ -122,11 +126,10 @@ public class PostService {
 
         String tokenFromEmail = tokenService.extractEmailFromToken(token);
 
-
         Post findPost = postRepository.findByIdOrElseThrow(Id);
 
         if (!findPost.getUser().getEmail().equals(tokenFromEmail)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,"삭제 권한이 없습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
 
         postRepository.delete(findPost);

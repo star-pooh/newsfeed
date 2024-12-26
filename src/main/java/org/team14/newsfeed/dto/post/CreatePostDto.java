@@ -1,4 +1,4 @@
-package org.team14.newsfeed.dto;
+package org.team14.newsfeed.dto.post;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

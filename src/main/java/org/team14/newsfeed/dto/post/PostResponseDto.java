@@ -1,4 +1,4 @@
-package org.team14.newsfeed.dto;
+package org.team14.newsfeed.dto.post;
 
 
 import lombok.Getter;
@@ -23,22 +23,22 @@ public class PostResponseDto {
     public static PostResponseDto toDto(Post post) {
 
         return new PostResponseDto(
-            post.getId(),
-            post.getTitle(),
-            post.getContents(),
-            post.getUser().getUsername(),
-            post.getUser().getEmail()
+                post.getId(),
+                post.getTitle(),
+                post.getContents(),
+                post.getUser().getUsername(),
+                post.getUser().getEmail()
         );
     }
 
     public static PostResponseDto fromEntity(Post post) {
 
         return new PostResponseDto(
-            post.getId(),
-            post.getTitle(),
-            post.getContents(),
-            post.getUser().getUsername(),
-            post.getUser().getEmail()
+                post.getId(),
+                post.getTitle(),
+                post.getContents(),
+                post.getUser().getUsername(),
+                post.getUser().getEmail()
         );
     }
 

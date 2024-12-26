@@ -1,4 +1,4 @@
-package org.team14.newsfeed.dto;
+package org.team14.newsfeed.dto.post;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostUpdateRequestDto {
 
-  private final String title;
+    private final String title;
 
-  private final String contents;
+    private final String contents;
 
 }
