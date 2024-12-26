@@ -32,6 +32,7 @@ public class UserCreateRequestDto {
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     private final String email;
 
+
     /**
      * ^: 문자열의 시작.
      * <p>
@@ -50,6 +51,7 @@ public class UserCreateRequestDto {
     @Size(min = 8, message = "비밀번호는 최소 8글자 이상이어야 합니다.")
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     private final String password;
+
 
     private UserCreateRequestDto(String username, String email, String password) {
         this.username = username;

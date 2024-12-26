@@ -9,7 +9,10 @@ public interface FollowUserRepository extends JpaRepository<FollowUser, Long> {
 
     boolean existsByFollowingUserAndFollowedUser(User following, User followed);
 
+
     Optional<FollowUser> findByFollowingUserAndFollowedUser(User followUser, User followeduser);
 
     void deleteByFollowingUserAndFollowedUser(User following, User followed);
+
+
 }

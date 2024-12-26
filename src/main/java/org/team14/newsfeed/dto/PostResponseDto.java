@@ -2,10 +2,11 @@ package org.team14.newsfeed.dto;
 
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.team14.newsfeed.entity.Post;
 
 @Getter
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class PostResponseDto {
 
     private final Long id;
@@ -16,16 +17,12 @@ public class PostResponseDto {
 
     private final String username;
 
-    public PostResponseDto(Long id, String title, String contents, String username) {
-        this.id = id;
-        this.title = title;
-        this.contents = contents;
-        this.username = username;
-    }
+    private final String email;
+
 
     public static PostResponseDto toDto(Post post) {
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getEmail());
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
 
     }
 
