@@ -65,7 +65,7 @@ public class UserController {
 
     /**
      * 사용자 수정 API */
-    @PutMapping("/{userId}")
+    @PutMapping("/{id}")
     public UserUpdateResponseDto updateUser(@PathVariable Long userId,
             @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
         // 예외가 발생할 수 있는 부분을 try-catch로 감싸서 처리할 수 있습니다.
