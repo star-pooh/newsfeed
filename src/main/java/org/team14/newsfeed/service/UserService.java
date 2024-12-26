@@ -1,5 +1,6 @@
 package org.team14.newsfeed.service;
 
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.repository.UserRepository;
@@ -66,5 +68,10 @@ public class UserService {
         if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    public List<UserReadResponseDto> findUser(String username, String email) {
+        return this.userRepository.findByUsernameAndEmail(username, email).stream().map(
+                UserReadResponseDto::of).toList();
     }
 }
