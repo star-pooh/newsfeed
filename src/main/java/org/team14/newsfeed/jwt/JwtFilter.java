@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
+import org.team14.newsfeed.exception.CustomException;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -64,7 +67,15 @@ public class JwtFilter extends GenericFilterBean {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-
         return null;
     }
+
+    public String getLoggedInUserEmail(HttpServletRequest request) {
+        String token = resolveToken(request);
+        if (token != null) {
+            return tokenProvider.extractEmailFromToken(token);
+        }
+        throw new CustomException(HttpStatus.BAD_REQUEST, "인증 정보가 없습니다.");
+    }
+
 }

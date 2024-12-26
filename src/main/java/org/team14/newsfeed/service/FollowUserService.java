@@ -19,8 +19,17 @@ public class FollowUserService {
     private final FollowUserRepository followUserRepository;
 
     private final UserRepository userRepository;
+    private final TokenService tokenService;
 
-    public void follow(String following, String followed) {
+
+    /**
+     * 대상 사용자를 팔로우
+     *
+     * @param token    팔로우 하는 사용자의 이메일
+     * @param followed 팔로우 대상(target)
+     */
+    public void follow(String token, String followed) {
+        String following = tokenService.extractEmailFromToken(token);
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
 
@@ -42,8 +51,16 @@ public class FollowUserService {
         followUserRepository.save(follow);
     }
 
+    /**
+     * 대상 사용자를 팔로우 해제
+     *
+     * @param token    팔로우 하는 사용자의 이메일
+     * @param followed 팔로우 대상(target)
+     */
     @Transactional
-    public void unfollow(String following, String followed) {
+
+    public void unfollow(String token, String followed) {
+        String following = tokenService.extractEmailFromToken(token);
 
         User followedUser = userRepository.findUserByEmailOrElseThrow(followed);
 

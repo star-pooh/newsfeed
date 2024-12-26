@@ -1,5 +1,6 @@
 package org.team14.newsfeed.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.team14.newsfeed.dto.user.FollowUserDeleteRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
+import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
 
@@ -49,13 +51,40 @@ public class UserController {
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
-    //TODO : session이 완성되면 세션을 통해 로그인되어있는 사람의 email 가져오는 로직으로 변경
+
     @PostMapping("/follow")
-    public ResponseEntity<String> follow(@Valid @RequestBody FollowUserCreateRequestDto dto) {
+    public ResponseEntity<String> follow(@Valid @RequestBody FollowUserCreateRequestDto dto,
+            HttpServletRequest request) {
 
-        followUserService.follow(dto.getFollowingUserEmail(), dto.getFollowedUserEmail());
+        String token = request.getHeader("Authorization");
 
-        return ResponseEntity.ok("팔로우가 완료되었습니다.");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            followUserService.follow(token, dto.getFollowedUserEmail());
+
+            return ResponseEntity.ok("팔로우가 완료되었습니다.");
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
+    }
+
+    /**
+     * @param dto 사용자 email, 팔로우 대상(target) email
+     * @return
+     */
+
+    @DeleteMapping("/follow")
+    public ResponseEntity<String> unFollow(
+            @Valid @RequestBody FollowUserDeleteRequestDto dto, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            followUserService.unfollow(token, dto.getFollowedUserEmail());
+
+            return ResponseEntity.ok("언팔로우가 완료되었습니다.");
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
     }
 
     /**
