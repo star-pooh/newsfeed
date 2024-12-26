@@ -89,9 +89,12 @@ public class PostController {
 
         String token = request.getHeader("Authorization");
 
-
-        postService.delete(id, token);
-
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            postService.delete(id, token);
+        } else {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
