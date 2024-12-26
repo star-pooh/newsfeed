@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
+import org.team14.newsfeed.dto.user.UserUpdateResponseDto;
 import org.team14.newsfeed.entity.User;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
@@ -65,15 +66,15 @@ public class UserController {
     /**
      * 사용자 수정 API */
     @PutMapping("/{userId}")
-    public ResponseEntity<UserCreateResponseDto> updateUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "데이터가 잘못 입력되었습니다.");
+    public UserUpdateResponseDto updateUser(@PathVariable Long userId,
+            @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        // 예외가 발생할 수 있는 부분을 try-catch로 감싸서 처리할 수 있습니다.
+        try {
+            UserUpdateResponseDto updatedUser = userService.updateUser(userId, userUpdateRequestDto);
+            return updatedUser;
+        } catch (Exception e) {
+            // 예외 발생 시 처리 로직 (예: 로그 기록, 사용자에게 알림 등)
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 정보 수정 실패", e);
         }
-
-        User updatedUser = userService.updateUser(userId, userUpdateRequestDto);
-        return ResponseEntity.ok(UserCreateResponseDto.of(updatedUser));
     }
 }
