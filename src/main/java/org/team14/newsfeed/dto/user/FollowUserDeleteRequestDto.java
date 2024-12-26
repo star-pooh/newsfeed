@@ -6,12 +6,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class FollowUserCreateRequestDto {
+public class FollowUserDeleteRequestDto {
 
     @NotBlank(message = "Email은 필수입니다.")
     private final String followingUserEmail;
 
     @NotBlank(message = "Email은 필수입니다.")
     private final String followedUserEmail;
+
 
 }
