@@ -3,7 +3,6 @@ package org.team14.newsfeed.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.entity.User;
 import org.team14.newsfeed.exception.CustomException;
 
@@ -21,29 +20,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 이메일로 사용자 조회 및 예외 처리
     default User findByEmailOrElseThrow(String email) {
         return findByEmail(email).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
     }
 
     // 사용자 이름으로 사용자 조회 및 예외 처리
     default User findByUsernameOrElseThrow(String username) {
         return findByUsername(username).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + username));
+                new CustomException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + username));
     }
-
-    default User findUserByUsernameOrElseThrow(String username) {
-        return findUserByUsername(username).orElseThrow(
-                () -> new CustomException(HttpStatus.NOT_FOUND,
-                        "Does not exist username" + username));
-    }
-
-    default User findUserByEmailOrElseThrow(String email) {
-        return findByEmail(email).orElseThrow(
-
-                () -> new CustomException(HttpStatus.NOT_FOUND,
-                        "Dose not exist email" + email));
-    }
-
-    Optional<User> findUserByUsername(String username);
 
     /**
      * 사용자 조회

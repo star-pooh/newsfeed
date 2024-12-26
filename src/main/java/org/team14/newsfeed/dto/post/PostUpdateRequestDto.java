@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostUpdateRequestDto {
 
+    // 제목
     private final String title;
 
+    // 내용
     private final String contents;
-
 }

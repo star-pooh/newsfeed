@@ -3,6 +3,8 @@ package org.team14.newsfeed.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.http.HttpStatus;
+import org.team14.newsfeed.exception.CustomException;
 
 import java.util.List;
 
@@ -41,13 +43,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
     private List<FollowUser> followed;
 
-
     private User(String username, String email, String password) {
-
         this.username = username;
-
         this.email = email;
-
         this.password = password;
     }
 
@@ -88,7 +86,7 @@ public class User extends BaseEntity {
      */
     public void updateUsername(String username) {
         if (username == null) {
-            throw new IllegalArgumentException("사용자 이름은 필수 입력 값입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "사용자 이름은 필수 입력 값입니다.");
         }
         this.username = username;
     }
@@ -101,7 +99,7 @@ public class User extends BaseEntity {
      */
     public void updateEmail(String email) {
         if (email == null) {
-            throw new IllegalArgumentException("이메일 형식이 잘못되었습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이메일은 필수 입력 값입니다.");
         }
         this.email = email;
     }

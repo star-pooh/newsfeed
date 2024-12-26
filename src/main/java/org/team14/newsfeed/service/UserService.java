@@ -22,7 +22,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
     private final UserPasswordEncoder userPasswordEncoder;
     private final UserRepository userRepository;
 
@@ -33,7 +32,6 @@ public class UserService {
      */
     public void checkRegisteredUser(String email) {
         User foundUser = this.userRepository.findByEmail(email).orElse(null);
-
 
         if (Objects.isNull(foundUser)) {
             return;
@@ -90,7 +88,7 @@ public class UserService {
             user.updateEmail(userUpdateRequestDto.getEmail());
         }
 
-        /**
+        /*
          * 사용자 비밀번호 수정
          * 현재 비밀번호의 일치 여부를 확인하고 새 비밀번호를 암호화하여 저장
          *
@@ -110,7 +108,12 @@ public class UserService {
         return UserUpdateResponseDto.of(user);
     }
 
-    // 사용자 삭제
+    /**
+     * 사용자 삭제
+     *
+     * @param email    이메일
+     * @param password 비밀번호
+     */
     public void deleteUserByEmail(String email, String password) {
         // 사용자 조회
         User user = userRepository.findByEmail(email)
@@ -134,7 +137,12 @@ public class UserService {
     }
 
 
-    // 사용자 복구
+    /**
+     * 사용자 복구
+     *
+     * @param userId   사용자 ID
+     * @param password 비밀번호
+     */
     public void restoreUser(Long userId, String password) {
         // 사용자 조회
         User user = userRepository.findById(userId)
@@ -153,7 +161,8 @@ public class UserService {
     }
 
     public void checkAuthentication(String email, String password) {
-        User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
+        User foundUser = this.userRepository.findByEmail(email).orElseThrow(() ->
+                new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
 
         if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
@@ -174,5 +183,4 @@ public class UserService {
                 .map(UserReadResponseDto::of).toList();
 
     }
-
 }
