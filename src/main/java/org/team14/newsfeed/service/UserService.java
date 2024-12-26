@@ -4,13 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.config.PasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
-import org.team14.newsfeed.dto.user.UserReadResponseDto;
+import org.team14.newsfeed.dto.user.UserDeleteRequestDto;
 import org.team14.newsfeed.entity.User;
+import org.team14.newsfeed.exception.ResourceNotFoundException;
+import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
+import org.team14.newsfeed.dto.user.UserUpdateResponseDto;
+import org.team14.newsfeed.dto.user.UserReadResponseDto;
+import org.team14.newsfeed.exception.CustomServiceException.PasswordMismatchException;
+import org.team14.newsfeed.exception.CustomServiceException.ResourceNotFoundException;
 import org.team14.newsfeed.repository.UserRepository;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +67,91 @@ public class UserService {
         return UserCreateResponseDto.of(savedUser);
     }
 
+  /**
+   * 사용자 정보 수정
+   * 이메일 변경 시 중복 확인을 하고, 비밀번호 변경 시 현재 비밀번호를 확인합니다.
+   *
+   * @param userId 사용자 ID
+   * @param userUpdateRequestDto 사용자 업데이트 요청 DTO
+   * @return 업데이트된 사용자 정보
+   */
+  @Transactional
+  public UserUpdateResponseDto updateUser(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+    // 사용자 존재 여부 확인
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+
+    // 사용자 이름 변경
+    user.updateUsername(userUpdateRequestDto.getUsername());
+
+    // 이메일 변경 시 중복 확인
+    if (!user.getEmail().equals(userUpdateRequestDto.getEmail())) {
+      checkRegisteredUser(userUpdateRequestDto.getEmail());
+      user.updateEmail(userUpdateRequestDto.getEmail());
+    }
+
+    /**
+     * 사용자 비밀번호 수정
+     * 현재 비밀번호의 일치 여부를 확인하고 새 비밀번호를 암호화하여 저장
+     *
+     * @param currentPassword 현재 비밀번호
+     * @param newPassword     새로운 비밀번호
+     * @param passwordEncoder 비밀번호 암호화 도구
+     */
+    if (userUpdateRequestDto.getNewPassword() != null) {
+      if (!passwordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
+        // 비밀번호가 일치하지 않으면 예외 발생
+        throw new PasswordMismatchException("현재 비밀번호가 올바르지 않습니다.");
+      }
+
+      user.changePassword(passwordEncoder.encode(userUpdateRequestDto.getNewPassword()));
+    }
+
+    return UserUpdateResponseDto.of(user);
+  }
+
+  // 사용자 삭제
+  public void deleteUserByEmail(String email, String password) {
+    // 사용자 조회
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. email: " + email));
+
+    // 이미 삭제된 사용자 여부 확인
+    if (user.isDeleted()) {
+      log.error("[UserService.deleteUserByEmail] 이미 탈퇴한 사용자입니다. email: {}", email);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 탈퇴한 사용자입니다.");
+    }
+
+    // 비밀번호 검증
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      log.error("[UserService.deleteUserByEmail] 비밀번호가 일치하지 않습니다. email: {}", email);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+    }
+
+    // 사용자 삭제 처리
+    user.setDeleted();
+    userRepository.save(user);
+  }
+
+
+  // 사용자 복구
+  public void restoreUser(Long userId, String password) {
+    // 사용자 조회
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다. userId: " + userId));
+
+    // 비밀번호 검증
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+    }
+
+    // 복구 가능 여부 확인 및 복구
+    user.restore();
+
+    // 변경 사항 저장
+    userRepository.save(user);
+  }
+
     /**
      * 사용자 조회
      * <p>
@@ -73,4 +164,5 @@ public class UserService {
     public List<UserReadResponseDto> findUser(String username, String email) {
         return this.userRepository.findByUsernameAndEmail(username, email).stream().map(UserReadResponseDto::of).toList();
     }
+
 }

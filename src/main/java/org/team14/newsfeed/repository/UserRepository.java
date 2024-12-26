@@ -11,17 +11,23 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    default User findUserByUsernameOrElseThrow(String username) {
-        return findUserByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist username" + username));
+    // 이메일로 사용자 찾기
+    Optional<User> findByEmail(String email);
+
+    // 사용자 이름으로 사용자 찾기
+    Optional<User> findByUsername(String username);
+
+    // 이메일로 사용자 조회 및 예외 처리
+    default User findByEmailOrElseThrow(String email) {
+        return findByEmail(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
     }
 
-    Optional<User> findUserByEmail(String email);
-
-    default User findUserByEmailOrElseThrow(String email) {
-        return findUserByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dose not exist email" + email));
+    // 사용자 이름으로 사용자 조회 및 예외 처리
+    default User findByUsernameOrElseThrow(String username) {
+        return findByUsername(username).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 이름이 없는 사용자를 찾을 수 없습니다 : " + username));
     }
-
-    Optional<User> findUserByUsername(String username);
 
     /**
      * 사용자 조회
