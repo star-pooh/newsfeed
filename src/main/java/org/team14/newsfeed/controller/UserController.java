@@ -68,12 +68,10 @@ public class UserController {
     @PutMapping("/{id}")
     public UserUpdateResponseDto updateUser(@PathVariable Long userId,
             @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-        // 예외가 발생할 수 있는 부분을 try-catch로 감싸서 처리할 수 있습니다.
         try {
             UserUpdateResponseDto updatedUser = userService.updateUser(userId, userUpdateRequestDto);
             return updatedUser;
         } catch (Exception e) {
-            // 예외 발생 시 처리 로직 (예: 로그 기록, 사용자에게 알림 등)
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 정보 수정 실패", e);
         }
     }
