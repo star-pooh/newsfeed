@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
+import org.team14.newsfeed.dto.user.UserDeleteRequestDto;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.service.UserService;
@@ -66,7 +68,38 @@ public class UserController {
     }
 
     /**
-     * 사용자 수정 API */
+     * 사용자 삭제 API
+     */
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(@RequestBody @Valid UserDeleteRequestDto dto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
+        }
+
+        // 이메일과 비밀번호를 전달하여 삭제 처리
+        userService.deleteUserByEmail(dto.getEmail(), dto.getPassword());
+
+        return ResponseEntity.ok("사용자가 정상적으로 삭제되었습니다.");
+    }
+
+    /**
+    * 사용자 복구 API */
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<String> restoreUser(
+            @PathVariable Long userId,
+            @RequestBody @Valid UserDeleteRequestDto dto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "입력된 데이터가 잘못되었습니다.");
+        }
+
+        userService.restoreUser(userId, dto.getPassword());
+
+        return ResponseEntity.ok("사용자가 정상적으로 복구되었습니다.");
+
+    /** 
+    * 사용자 수정 API */
     @PatchMapping("/{id}")
     public ResponseEntity<UserUpdateResponseDto> updateUser(
             @PathVariable Long userId,

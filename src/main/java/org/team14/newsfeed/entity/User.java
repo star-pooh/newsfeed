@@ -63,6 +63,18 @@ public class User extends BaseEntity {
         return new User(username, email, password);
     }
 
+    // 삭제
+    public void setDeleted() {
+        this.isDeleted = true;
+    }
+
+    // 사용자 복구
+    public void restore() {
+        if (!this.isDeleted) {
+            throw new IllegalStateException("이미 활성화된 계정입니다.");
+        }
+        this.isDeleted = false;
+
     /**
      * 사용자 이름 수정
      * 유효성 검사 포함
