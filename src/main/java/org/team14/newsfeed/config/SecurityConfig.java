@@ -3,6 +3,7 @@ package org.team14.newsfeed.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,8 +62,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // 인증이 필요 없는 URL과 인증이 필요한 요청 정의
+                .logout(logout -> logout.disable())
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/login", "/users/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").authenticated()
                         .anyRequest().authenticated())
 
                 // 세션이 아닌 JWT로 상태를 유지하기 위해 Stateless로 설정

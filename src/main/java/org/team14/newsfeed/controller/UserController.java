@@ -2,16 +2,18 @@ package org.team14.newsfeed.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import org.team14.newsfeed.dto.user.FollowUserCreateRequestDto;
 import org.team14.newsfeed.dto.user.FollowUserDeleteRequestDto;
 import org.team14.newsfeed.dto.user.UserCreateRequestDto;
@@ -19,8 +21,6 @@ import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.service.FollowUserService;
 import org.team14.newsfeed.service.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -46,7 +46,6 @@ public class UserController {
                 dto.getEmail(),
                 dto.getPassword());
 
-
         return new ResponseEntity<>(userCreateResponseDto, HttpStatus.CREATED);
     }
 
@@ -58,6 +57,7 @@ public class UserController {
 
         return ResponseEntity.ok("팔로우가 완료되었습니다.");
     }
+
     /**
      * 사용자 조회 API
      *
@@ -77,6 +77,7 @@ public class UserController {
         List<UserReadResponseDto> foundUserList = this.userService.findUser(username, email);
 
         return new ResponseEntity<>(foundUserList, HttpStatus.OK);
+    }
 
     @DeleteMapping("/follow")
     public ResponseEntity<String> unFollow(@Valid @RequestBody FollowUserDeleteRequestDto dto) {

@@ -1,5 +1,6 @@
 package org.team14.newsfeed.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,9 @@ import org.team14.newsfeed.dto.PostResponseDto;
 import org.team14.newsfeed.dto.PostUpdateRequestDto;
 import org.team14.newsfeed.entity.Post;
 import org.team14.newsfeed.entity.User;
-import org.team14.newsfeed.exception.CustomRepositoryException;
+import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.repository.PostRepository;
 import org.team14.newsfeed.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,8 @@ public class PostService {
 
         postRepository.save(post);
 
-        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(), post.getUser().getUsername(), post.getUser().getEmail());
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContents(),
+                post.getUser().getUsername(), post.getUser().getEmail());
 
     }
 
@@ -72,14 +72,15 @@ public class PostService {
 
         }
 
-        if (posts.isEmpty()){
-            throw new CustomRepositoryException(getClass().getSimpleName(), HttpStatus.NOT_FOUND, "포스트가 없습니다.");
+        if (posts.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "포스트가 없습니다.");
         }
         //포스트를 리스트형태로 변환
         return posts.stream()
                 .map(PostResponseDto::toDto)
                 .toList();
     }
+
     //포스트를 수정하는 메서드
     @Transactional
     public PostResponseDto updatePost(Long Id, PostUpdateRequestDto updateRequestDto) {
@@ -87,17 +88,18 @@ public class PostService {
         //포스트를 찾기
         Post findPost = postRepository.findByIdOrElseThrow(Id);
         //타이틀이 널이 아닌 경우 타이틀 수정
-        if(updateRequestDto.getTitle() != null) {
+        if (updateRequestDto.getTitle() != null) {
             findPost.setTitle(updateRequestDto.getTitle());
 
         }
         //내용이 널이 아닌 경우 널 수정
-        if(updateRequestDto.getContents() != null) {
+        if (updateRequestDto.getContents() != null) {
             findPost.setContents(updateRequestDto.getContents());
         }
         //둘다 널이 아닌 경우 둘다 수정되게 만듦
 
-        return new PostResponseDto(findPost.getId(), findPost.getTitle(), findPost.getContents(), findPost.getUser().getUsername(), findPost.getUser().getEmail());
+        return new PostResponseDto(findPost.getId(), findPost.getTitle(), findPost.getContents(),
+                findPost.getUser().getUsername(), findPost.getUser().getEmail());
     }
 
 

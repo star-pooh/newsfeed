@@ -1,5 +1,7 @@
 package org.team14.newsfeed.service;
 
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,15 +11,14 @@ import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.entity.User;
-import org.team14.newsfeed.exception.CustomRepositoryException;
+import org.team14.newsfeed.exception.CustomException;
 import org.team14.newsfeed.repository.UserRepository;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+
     private final UserPasswordEncoder userPasswordEncoder;
     private final UserRepository userRepository;
 
@@ -39,7 +40,8 @@ public class UserService {
                     "탈퇴한 이메일로는 가입할 수 없습니다. email : " + email);
         } else {
             log.error("[UserService.checkRegisteredUser] 등록된 이메일로 가입 시도 : {}", email);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다. email : " + email);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "이미 등록된 이메일입니다. email : " + email);
         }
     }
 
@@ -64,7 +66,12 @@ public class UserService {
         User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
 
         if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
-            throw new CustomRepositoryException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    public List<UserReadResponseDto> findUser(String username, String email) {
+        return this.userRepository.findByUsernameAndEmail(username, email).stream()
+                .map(UserReadResponseDto::of).toList();
     }
 }
