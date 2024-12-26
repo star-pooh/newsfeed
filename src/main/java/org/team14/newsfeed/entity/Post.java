@@ -43,5 +43,18 @@ public class Post extends BaseEntity {
     public static Post of(String title, String contents, User user) {
         return new Post(title, contents, user);
     }
+
+    //하나하나씩 사용하기 위해 세터로 각각 수정
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+
+
+
 }
 

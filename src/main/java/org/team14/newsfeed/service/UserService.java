@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.team14.newsfeed.config.PasswordEncoder;
+import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.entity.User;
+import org.team14.newsfeed.exception.CustomRepositoryException;
 import org.team14.newsfeed.repository.UserRepository;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -18,8 +18,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
-    private final PasswordEncoder passwordEncoder;
+    private final UserPasswordEncoder userPasswordEncoder;
     private final UserRepository userRepository;
 
     /**
@@ -53,7 +52,7 @@ public class UserService {
      * @return 등록된 사용자 정보
      */
     public UserCreateResponseDto createUser(String username, String email, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = userPasswordEncoder.encode(password);
         User user = User.of(username, email, encodedPassword);
 
         User savedUser = this.userRepository.save(user);
@@ -61,16 +60,11 @@ public class UserService {
         return UserCreateResponseDto.of(savedUser);
     }
 
-    /**
-     * 사용자 조회
-     * <p>
-     * 조건(사용자 이름, 이메일) 유무에 따라 조건식 변경
-     *
-     * @param username 사용자 이름
-     * @param email    이메일
-     * @return 조회된 사용자 정보
-     */
-    public List<UserReadResponseDto> findUser(String username, String email) {
-        return this.userRepository.findByUsernameAndEmail(username, email).stream().map(UserReadResponseDto::of).toList();
+    public void checkAuthentication(String email, String password) {
+        User foundUser = this.userRepository.findUserByEmailOrElseThrow(email);
+
+        if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
+            throw new CustomRepositoryException(getClass().getSimpleName(), HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+        }
     }
 }
