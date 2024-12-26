@@ -31,30 +31,25 @@ public class UserCreateRequestDto {
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     private final String email;
 
-    /**
-     * ^: 문자열의 시작.
-     * <p>
-     * (?=.*[a-zA-Z]): 대/소문자를 최소 1개 포함하는지 확인.
-     * <p>
-     * (?=.*\d): 숫자를 최소 1개 포함하는지 확인.
-     * <p>
-     * (?=.*[\W_]): 특수문자를 최소 1개 포함하는지 확인.
-     * \W는 알파벳이나 숫자가 아닌 모든 문자를 나타내며, 여기에 _도 포함됩니다.
-     * 특수문자에는 !, @, #, $, %, ^, &, * 등이 포함됩니다.
-     * <p>
-     * .*: 임의의 문자(숫자, 영문자, 특수문자 등)를 0개 이상 포함할 수 있음.
-     * <p>
-     * 여기서는 전체 문자열을 패턴으로 확인하기 위한 부분.
-     * <p>
-     * $: 문자열의 끝.
-     */
-    // 비밀번호
-    @Pattern(
-            regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).*$",
-            message = "비밀번호는 대소문자 포함 영문 + 숫자 + 특수문자를 최소 1글자씩 포함해야합니다.")
-    @Size(min = 8, message = "비밀번호는 최소 8글자 이상이어야 합니다.")
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-    private final String password;
+  /**
+   * ^: 문자열의 시작.
+   * <p>
+   * (?=.*[a-zA-Z]): 대문자 또는 소문자가 최소 한 글자 포함되어야 함.
+   * <p>
+   * (?=.*\d): 숫자가 최소 한 글자 포함되어야 함.
+   * <p>
+   * (?=.*[\W_]): 특수문자가 최소 한 글자 포함되어야 함 (\W는 알파벳, 숫자가 아닌 문자).
+   * <p>
+   * $: 문자열의 끝.
+   */
+  // 비밀번호
+  @Pattern(
+      regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).*$",
+      message = "비밀번호는 대소문자 포함 영문 + 숫자 + 특수문자를 최소 1글자씩 포함해야합니다.")
+  @Size(min = 8, message = "비밀번호는 최소 8글자 이상이어야 합니다.")
+  @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+  private final String password;
+
 
     private UserCreateRequestDto(String username, String email, String password) {
         this.username = username;
