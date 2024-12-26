@@ -120,12 +120,12 @@ public class PostService {
 
     public void delete(Long Id, String token) {
 
-        String emailFromToken = tokenService.extractEmailFromToken(token);
+        String tokenFromEmail = tokenService.extractEmailFromToken(token);
 
 
         Post findPost = postRepository.findByIdOrElseThrow(Id);
 
-        if (!findPost.getUser().getEmail().equals(token)) {
+        if (!findPost.getUser().getEmail().equals(tokenFromEmail)) {
             throw new CustomException(HttpStatus.BAD_REQUEST,"삭제 권한이 없습니다.");
         }
 
