@@ -79,7 +79,6 @@ public class UserController {
         return new ResponseEntity<>(foundUserList, HttpStatus.OK);
     }
 
-
     @DeleteMapping("/follow")
     public ResponseEntity<String> unFollow(@Valid @RequestBody FollowUserDeleteRequestDto dto) {
 
