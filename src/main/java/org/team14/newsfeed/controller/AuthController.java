@@ -18,7 +18,7 @@ import org.team14.newsfeed.dto.login.LoginRequestDto;
 import org.team14.newsfeed.dto.login.TokenResponseDto;
 import org.team14.newsfeed.jwt.JwtFilter;
 import org.team14.newsfeed.jwt.TokenProvider;
-import org.team14.newsfeed.service.BlacklistService;
+import org.team14.newsfeed.service.BlackListService;
 import org.team14.newsfeed.service.UserService;
 
 @Slf4j
@@ -29,8 +29,7 @@ public class AuthController {
     private final TokenProvider tokenProvider; // JWT 토큰 생성 및 관리
     private final AuthenticationManagerBuilder authenticationManagerBuilder; // 인증 처리
     private final UserService userService;
-    private final BlacklistService blacklistService;
-    private final JwtFilter jwtFilter;
+    private final BlackListService blackListService;
 
 
     @PostMapping("/login")
@@ -73,8 +72,8 @@ public class AuthController {
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 SecurityContextHolder.clearContext();
-                blacklistService.addToBlacklist(token);
-                blacklistService.getBlacklistedTokens();
+                blackListService.addToBlacklist(token);
+                blackListService.getBlacklistedTokens();
                 return ResponseEntity.ok("로그아웃 되었습니다");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

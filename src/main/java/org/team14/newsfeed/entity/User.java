@@ -1,16 +1,12 @@
 package org.team14.newsfeed.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.http.HttpStatus;
+import org.team14.newsfeed.exception.CustomException;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -47,21 +43,74 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
     private List<FollowUser> followed;
 
-
     private User(String username, String email, String password) {
-
         this.username = username;
-
         this.email = email;
-
         this.password = password;
     }
 
     protected User() {
     }
 
+    /**
+     * 새로운 사용자 객체 생성
+     *
+     * @param username 사용자 이름
+     * @param email    사용자 이메일
+     * @param password 사용자 비밀번호 (암호화된 상태)
+     * @return 생성된 사용자 객체
+     */
     public static User of(String username, String email, String password) {
 
         return new User(username, email, password);
     }
+
+    // 삭제
+    public void setDeleted() {
+        this.isDeleted = true;
+    }
+
+    // 사용자 복구
+    public void restore() {
+        if (!this.isDeleted) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이미 활성화된 계정입니다.");
+        }
+        this.isDeleted = false;
+    }
+
+    /**
+     * 사용자 이름 수정
+     * 유효성 검사 포함
+     *
+     * @param username 변경할 사용자 이름
+     */
+    public void updateUsername(String username) {
+        if (username == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "사용자 이름은 필수 입력 값입니다.");
+        }
+        this.username = username;
+    }
+
+    /**
+     * 사용자 이메일 수정
+     * 유효성 검사 포함
+     *
+     * @param email 변경할 사용자 이메일
+     */
+    public void updateEmail(String email) {
+        if (email == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "이메일은 필수 입력 값입니다.");
+        }
+        this.email = email;
+    }
+
+    /**
+     * 사용자 비밀번호 수정 현재 비밀번호의 일치 여부를 확인하고 새 비밀번호를 암호화하여 저장
+     *
+     * @param newEncodedPassword 새로운 비밀번호
+     */
+    public void changePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+    }
 }
+
