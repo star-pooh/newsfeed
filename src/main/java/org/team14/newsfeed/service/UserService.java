@@ -3,9 +3,9 @@ package org.team14.newsfeed.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.team14.newsfeed.config.UserPasswordEncoder;
 import org.team14.newsfeed.dto.user.UserCreateResponseDto;
 import org.team14.newsfeed.dto.user.UserReadResponseDto;
 import org.team14.newsfeed.dto.user.UserUpdateRequestDto;
@@ -21,7 +21,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    private final UserPasswordEncoder userPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     /**
@@ -52,7 +52,7 @@ public class UserService {
      * @return 등록된 사용자 정보
      */
     public UserCreateResponseDto createUser(String username, String email, String password) {
-        String encodedPassword = userPasswordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(password);
         User user = User.of(username, email, encodedPassword);
 
         User savedUser = this.userRepository.save(user);
@@ -92,12 +92,12 @@ public class UserService {
          * @param passwordEncoder 비밀번호 암호화 도구
          */
         if (userUpdateRequestDto.getNewPassword() != null) {
-            if (!userPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
+            if (!passwordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
                 // 비밀번호가 일치하지 않으면 예외 발생
                 throw new CustomException(HttpStatus.BAD_REQUEST, "현재 비밀번호가 올바르지 않습니다.");
             }
 
-            user.changePassword(userPasswordEncoder.encode(userUpdateRequestDto.getNewPassword()));
+            user.changePassword(passwordEncoder.encode(userUpdateRequestDto.getNewPassword()));
         }
 
         return UserUpdateResponseDto.of(user);
@@ -120,7 +120,7 @@ public class UserService {
         }
 
         // 비밀번호 검증
-        if (!userPasswordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -142,7 +142,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다. userId: " + userId));
 
         // 비밀번호 검증
-        if (!userPasswordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -157,7 +157,7 @@ public class UserService {
         User foundUser = this.userRepository.findByEmail(email).orElseThrow(() ->
                 new CustomException(HttpStatus.NOT_FOUND, "해당 이메일로 사용자를 찾을 수 없습니다.: " + email));
 
-        if (!userPasswordEncoder.matches(password, foundUser.getPassword())) {
+        if (!passwordEncoder.matches(password, foundUser.getPassword())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
     }
