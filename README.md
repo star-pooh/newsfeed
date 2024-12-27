@@ -50,6 +50,7 @@
 |황서호|POST|로그아웃|/api/logout||로그아웃이 완료되었습니다.|
 
 ## 📂 ERD
+![캡처 JPG](https://github.com/user-attachments/assets/097899ff-1a41-4da3-a99a-3a2ca678b430)
 
 <br>
 
