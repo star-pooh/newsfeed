@@ -23,7 +23,7 @@
     - [🧾 API 명세서](#-API-명세서)
     - [📂 ERD](#-ERD)
     - [🚀 Stacks](#-Stacks)
-    - [💻 Program operation screen](#-Program-operation-screen)
+    - [💻 Wireframe](#-Wireframe)
     - [☄️ Major functional code](#-Major-functional-code)
     - [📂 Architecture](#-Architecture)
     - [🛠️ Trouble shooting](#-Trouble-shooting)
@@ -54,6 +54,11 @@
 
 <br>
 
+## 💻 와이어 프레임
+
+<img width="953" alt="팔로우 추가버전" src="https://github.com/user-attachments/assets/99506212-6257-4a11-96dd-3e63199831b3" />
+
+
 ## 🚀 Stacks
 
 ### Environment
@@ -74,14 +79,7 @@
 
 <br>
 
-## 💻 Program operation screen
 
-<details>
-   <summary>📍 실행 화면 보기</summary>
-
-### 📍 실행 화면
-
-</details>
 
 
 
