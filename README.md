@@ -42,7 +42,7 @@
 |박지안|DELETE|사용자 삭제 (회원탈퇴)|/api/users/|RequestBody <br> <br> email → 필수 ⭕ <br> password → 필수 ⭕|계정 삭제가 완료되었습니다.|
 |황서호|POST|게시글 생성|/api/posts|RequestBody <br> <br> title → 필수 ⭕ <br> contents → 필수 ⭕ <br>  username → 필수 ⭕ |{<br>&nbsp;&nbsp;id,<br>&nbsp;&nbsp;title,<br>&nbsp;&nbsp;contents,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
 |이현우|GET|게시글 조회<br>(전체조회 / 특정 유저 조회)|/api/posts|RequestParam <br> <br> username → 필수 ❌ <br> email → 필수 ❌|{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>},<br>{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}, <br> ...|
-|이현우|PATCH|게시글 수정|/api/posts/{id}|RequestBody <br> <br> username → 필수 ❌ <br> email → 필수 ⭕ <br>  password → 필수 ❌ <br> <br> 수정 전/후가 같으면 수정 되지 않음|{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
+|이현우|PATCH|게시글 수정|/api/posts/{id}|RequestBody <br> <br> title → 필수 ❌ <br>  contents → 필수 ❌ <br> <br> 수정 전/후가 같으면 수정 되지 않음|{<br>&nbsp;&nbsp;id,<br>&nbsp;&nbsp;title,<br>&nbsp;&nbsp;contents,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
 |이현우|DELET|게시글 삭제|/api/posts/{id}||삭제가 완료되었습니다.|
 |황서호|GET|관심유저 설정|/api/users/follow|RequestParam<br><br>followedUserEmail(관심 유저로 등록하고 싶은 사용자 email) → 필수 ⭕|팔로우가 완료되었습니다.|
 |홍은기||전역 예외 처리|||{<br>&nbsp;&nbsp;code:400,<br>&nbsp;&nbsp;httpStatus:BAD_REQUEST,<br>&nbsp;&nbsp;message:"에러 메시지"<br>}|
