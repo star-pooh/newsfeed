@@ -37,7 +37,7 @@
 |담당자|Method|기능|URL|request|response|
 |------|------|----|---|-------|--------|
 |홍은기|POST|사용자 생성(회원가입)|/api/users|RequestBody <br> <br> username → 필수 ⭕ <br> email → 필수 ⭕ <br>  password → 필수 ⭕ |{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
-|홍은기|GET|조회|/api/users|RequestParam <br> <br> username → 필수 ❌ <br> email → 필수 ❌|{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>},<br>{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}, <br> ...|
+|홍은기|GET|사용자 조회|/api/users|RequestParam <br> <br> username → 필수 ❌ <br> email → 필수 ❌|{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>},<br>{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}, <br> ...|
 |박지안|PATCH|사용자 수정|/api/users/{id}|RequestBody <br> <br> username → 필수 ❌ <br> email → 필수 ⭕ <br>  password → 필수 ❌ <br> <br> 수정 전/후가 같으면 수정 되지 않음|{<br>&nbsp;&nbsp;email,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
 |박지안|DELETE|사용자 삭제 (회원탈퇴)|/api/users/|RequestBody <br> <br> email → 필수 ⭕ <br> password → 필수 ⭕|계정 삭제가 완료되었습니다.|
 |황서호|POST|게시글 생성|/api/posts|RequestBody <br> <br> title → 필수 ⭕ <br> contents → 필수 ⭕ <br>  username → 필수 ⭕ |{<br>&nbsp;&nbsp;id,<br>&nbsp;&nbsp;title,<br>&nbsp;&nbsp;contents,<br>&nbsp;&nbsp;username,<br>&nbsp;&nbsp;createdDate,<br>&nbsp;&nbsp;modifiedDate<br>}|
