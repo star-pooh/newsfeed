@@ -27,6 +27,9 @@ dependencies {
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -34,11 +37,22 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Jpa
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Spring security
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     // Mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Password Encoder
+    implementation 'at.favre.lib:bcrypt:0.10.2'
+
+    // JWT
+    // 토큰 생성, 파싱, 서명 등을 제공하는 핵심 라이브러리
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    // API의 실제 구현체로, 토큰 처리 로직을 실행하는 데 필요
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    // Jackson을 사용하여 JWT Payload의 JSON 데이터를 직렬화/역직렬화
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
